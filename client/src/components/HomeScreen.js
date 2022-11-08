@@ -19,6 +19,7 @@ const HomeScreen = () => {
         store.loadIdNamePairs();
     }, []);
 
+
     function handleCreateNewList() {
         store.createNewList();
     }
@@ -48,7 +49,7 @@ const HomeScreen = () => {
             >
                 <AddIcon />
             </Fab>
-                <Typography variant="h2">Your Lists</Typography>
+                <Typography variant="dense" >Your Lists</Typography>
             </div>
             <div id="list-selector-list">
                 {
