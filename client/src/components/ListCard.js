@@ -55,6 +55,7 @@ function ListCard(props) {
     }
 
     function handleKeyPress(event) {
+        console.log("eneter pk");
         if (event.code === "Enter") {
             let id = event.target.id.substring("list-".length);
             store.changeListName(id, text);

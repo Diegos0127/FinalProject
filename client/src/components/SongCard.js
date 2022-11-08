@@ -75,7 +75,7 @@ function SongCard(props) {
                 <IconButton onClick={(event) => {
                         handleRemoveSong()
                     }} aria-label='delete'>
-                    <CloseIcon style={{fontSize:'48pt', color: 'grey'}} />
+                    <CloseIcon style={{fontSize:'36pt', color: 'grey'}} />
                 </IconButton>
             </Box>
         </Box>

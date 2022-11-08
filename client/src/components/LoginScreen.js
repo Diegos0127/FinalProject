@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import AuthContext from '../auth'
 
 import Copyright from './Copyright'
+import MUIUserRegistrationModal from './MUIUserRegistrationModal';
 
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
@@ -26,7 +27,7 @@ export default function LoginScreen() {
             formData.get('email'),
             formData.get('password')
         );
-
+            
     };
 
     return (
@@ -108,6 +109,7 @@ export default function LoginScreen() {
                             </Grid>
                         </Grid>
                         <Copyright sx={{ mt: 5 }} />
+                        <MUIUserRegistrationModal/>
                     </Box>
                 </Box>
             </Grid>

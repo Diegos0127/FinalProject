@@ -12,6 +12,7 @@ import Link from '@mui/material/Link';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import MUIUserRegistrationModal from './MUIUserRegistrationModal';
 
 export default function RegisterScreen() {
     const { auth } = useContext(AuthContext);
@@ -116,6 +117,7 @@ export default function RegisterScreen() {
                                 </Link>
                             </Grid>
                         </Grid>
+                        <MUIUserRegistrationModal/>
                     </Box>
                 </Box>
                 <Copyright sx={{ mt: 5 }} />
