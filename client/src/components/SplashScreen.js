@@ -1,7 +1,9 @@
-export default function SplashScreen() {
+import Box from '@mui/material/Box';
+
+const SplashScreen = () => {
     return (
-        <div id="splash-screen">
-            Playlister
-        </div>
+        <Box id = "splash-screen" sx={{ flexGrow: 1 }}>hello</Box>
     )
 }
+
+export default SplashScreen;
