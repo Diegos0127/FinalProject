@@ -2,44 +2,35 @@ import { useContext, useState } from 'react'
 import { GlobalStoreContext } from '../store'
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import IconButton from '@mui/material/IconButton';
-import ListItem from '@mui/material/ListItem';
+import Button from '@mui/material/Button';
+import ThumbUpOffAltOutlinedIcon from '@mui/icons-material/ThumbUpOffAltOutlined';
+import ThumbDownOffAltOutlinedIcon from '@mui/icons-material/ThumbDownOffAltOutlined';
+import KeyboardDoubleArrowDownOutlinedIcon from '@mui/icons-material/KeyboardDoubleArrowDownOutlined';
+import KeyboardDoubleArrowUpOutlinedIcon from '@mui/icons-material/KeyboardDoubleArrowUpOutlined';
 import TextField from '@mui/material/TextField';
 import { Typography } from '@mui/material';
+import WorkspaceSubscreen from './WorkspaceSubscreen';
+import EditToolbar from './EditToolbar';
 
 /*
-    This is a card in our list of top 5 lists. It lets select
+    This is a card in our list of playlists. It lets select
     a list for editing and it has controls for changing its 
     name or deleting it.
     
-    @author McKilla Gorilla
+    @author Diego Sandoval
 */
 function ListCard(props) {
     const { store } = useContext(GlobalStoreContext);
     const [editActive, setEditActive] = useState(false);
+    const [openContentActive, setOpenContentActive] = useState(false);
     const [text, setText] = useState("");
     const { idNamePair, selected } = props;
 
-    function handleLoadList(event, id) {
-        console.log("handleLoadList for " + id);
-        if (!event.target.disabled) {
-            let _id = event.target.id;
-            if (_id.indexOf('list-card-text-') >= 0)
-                _id = ("" + _id).substring("list-card-text-".length);
-
-            console.log("load " + event.target.id);
-
-            // CHANGE THE CURRENT LIST
-            store.setCurrentList(id);
-        }
-    }
     function handleClick (event,id) {
         if (event.detail === 1) {
-            console.log(id);
+            console.log('yay');
         }
-        else if (event.detail === 2) {
+        else if (event.detail === 2 && !store.currentList) {
             handleToggleEdit(event);
         }
     }
@@ -49,18 +40,9 @@ function ListCard(props) {
     }
 
     function toggleEdit() {
-        let newActive = !editActive;
-        if (newActive) {
+        if (!editActive)
             store.setIsListNameEditActive();
-        }
-        setEditActive(newActive);
-    }
-
-    async function handleDeleteList(event, id) {
-        event.stopPropagation();
-        let _id = event.target.id;
-        _id = ("" + _id).substring("delete-list-".length);
-        store.markListForDeletion(id);
+        setEditActive(!editActive);
     }
 
     function handleKeyPress(event) {
@@ -73,7 +55,18 @@ function ListCard(props) {
     function handleUpdateText(event) {
         setText(event.target.value);
     }
-
+    function toggleOpenContent(){
+        store.closeCurrentList();
+        if(!openContentActive)
+            store.setCurrentList(idNamePair._id);
+        setOpenContentActive(!openContentActive);
+    }
+    if(store.currentList&&store.currentList._id!==idNamePair._id){
+        if(openContentActive){
+            setOpenContentActive(false);
+        }
+    }
+    /*
     let selectClass = "unselected-list-card";
     if (selected) {
         selectClass = "selected-list-card";
@@ -81,27 +74,45 @@ function ListCard(props) {
     let cardStatus = false;
     if (store.isListNameEditActive) {
         cardStatus = true;
-    }
+    }*/
     let cardElement =
         <Box
             id={idNamePair._id}
             key={idNamePair._id}
             className={"list-card unselected-list-card"}
             sx={{ marginTop: '0.1%', display: 'flex', p: 1,fontWeight:'bold'}}
-            onClick={(event) => {
-                handleClick(event, idNamePair._id)
-            }}
+            onClick={(event) => { handleClick(event, idNamePair._id)}}
         >
             <Grid container >
                 <Grid item xs ={12} xl = {7} sx={{ p: 1}}>
                     <Box >{idNamePair.name}</Box>
                     <Typography sx={{fontWeight:'bold'}}>By: {idNamePair.name}</Typography>
+                </Grid>
+                <Grid item xs ={12} xl = {3}>
+                    <Button startIcon={<ThumbUpOffAltOutlinedIcon id = "list-card-button"/>}></Button >
+                    1233455
+                </Grid>
+                <Grid item xs ={12} xl = {2} >
+                    <Button startIcon={<ThumbDownOffAltOutlinedIcon id = "list-card-button"/>}></Button >
+                    1233455
+                </Grid>
+                {openContentActive? <Grid item xs ={12} xl = {12}>
+                    <WorkspaceSubscreen></WorkspaceSubscreen>
+                </Grid>:""}
+                {openContentActive? <Grid item xs ={12} xl = {12}>
+                    <EditToolbar idNamePair={idNamePair}></EditToolbar>
+                </Grid>:""}
+                <Grid item xs ={12} xl = {7} sx={{ p: 1, mt:4 }} >
                     <Typography sx={{fontWeight:'bold'}}>Published: {idNamePair.name}</Typography>
                 </Grid>
-                    <Box sx={{ p: 1}}>{idNamePair.name}</Box>
-                <Grid item xs ={12} xl = {5}></Grid>
+                <Grid item xs ={12} xl = {4} sx={{ p: 1, mt:4 }}>
+                    <Typography sx={{fontWeight:'bold'}}>Listens: 1,2224,567</Typography>
+                </Grid>
+                <Grid item xs ={12} xl = {1} sx={{ p: 1}}>
+                    {openContentActive?<Button onClick={toggleOpenContent} startIcon={<KeyboardDoubleArrowUpOutlinedIcon id = "list-card-button"/>}></Button >
+                    :<Button onClick={toggleOpenContent} startIcon={<KeyboardDoubleArrowDownOutlinedIcon id = "list-card-button"/> }></Button >}
+                </Grid>
             </Grid>
-           
         </Box>
 
     if (editActive) {

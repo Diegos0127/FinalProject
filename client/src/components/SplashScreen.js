@@ -14,7 +14,7 @@ const SplashScreen = () => {
             <Typography color={playlisterColor} sx ={{fontStyle:'italic', fontSize:'72px'}}>
                 Welcome To:
             </Typography>
-            <img style ={{flexGrow: 1}} src={process.env.PUBLIC_URL+'PlaylisterLogo.png'} />
+            <img style ={{flexGrow: 1}} src={process.env.PUBLIC_URL+'PlaylisterLogo.png'} alt=""/>
             <Typography variant ="h5" mx = {"14%"} sx ={{fontWeight:'bold'}}>
                 An app where you can store all of your favorite songs into different playlists
                  for different moods and situations. Don't know what to play? Browse a catalogue of playlists

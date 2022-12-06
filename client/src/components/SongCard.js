@@ -46,13 +46,13 @@ function SongCard(props) {
         }
     }
 
-    let cardClass = "list-card unselected-list-card";
+    let cardClass = "song-card unselected-song-card";
     return (
         <Box
             key={index}
             id={'song-' + index + '-card'}
-            sx={{ marginTop: '15px', display: 'flex', p: 1 }}
-            style={{ width: '98%', fontSize: '36pt' }}
+            sx={{ display: 'flex', p: 1, backgroundColor:'info.dark'}}
+            style={{ width: '98%', fontSize: '20pt' }}
             className={cardClass}
             onDragStart={handleDragStart}
             onDragOver={handleDragOver}
@@ -63,19 +63,13 @@ function SongCard(props) {
             onClick={handleClick}
         >
             <Box sx={{ p: 1, flexGrow: 1 }}>
-                {index + 1}.
-                <a
-                id={'song-' + index + '-link'}
-                className="song-link"
-                href={"https://www.youtube.com/watch?v=" + song.youTubeId}>
-                {song.title} by {song.artist}
-            </a>
+                {index + 1}. {song.title} by {song.artist}
             </Box>
-            <Box sx={{ p: 1 }}>
+            <Box sx={{height:"50%"}}>
                 <IconButton onClick={(event) => {
                         handleRemoveSong()
                     }} aria-label='delete'>
-                    <CloseIcon style={{fontSize:'36pt', color: 'grey'}} />
+                    <CloseIcon style={{fontSize:'36pt', color: 'white'}} />
                 </IconButton>
             </Box>
         </Box>

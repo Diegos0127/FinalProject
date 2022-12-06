@@ -1,10 +1,8 @@
 import { useContext, useState } from 'react';
-import { useHistory } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import AuthContext from '../auth';
 import { GlobalStoreContext } from '../store'
 import { purple} from '@mui/material/colors'
-import EditToolbar from './EditToolbar'
 
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import AppBar from '@mui/material/AppBar';
@@ -74,14 +72,6 @@ export default function AppBanner() {
             <MenuItem onClick={handleLogout}>Logout</MenuItem>
         </Menu>        
 
-    let editToolbar = "";
-    let menu = loggedOutMenu;
-    if (auth.loggedIn) {
-        menu = loggedInMenu;
-        if (store.currentList) 
-            editToolbar = <EditToolbar />;
-    }
-
     return (
         <Box sx={{ width: "100%", height: "6.5vh" }} >
             <AppBar position="static" sx={{ bgcolor: 'primary.main',width: "100%", height: "100%" }}>
@@ -106,9 +96,7 @@ export default function AppBanner() {
                     
                 </Toolbar>
             </AppBar>
-            {
-                menu
-            }
+            { auth.loggedIn?loggedInMenu:loggedOutMenu  }
         </Box>
     );
 }

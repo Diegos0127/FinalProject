@@ -258,7 +258,8 @@ function GlobalStoreContextProvider(props) {
 
     // THIS FUNCTION PROCESSES CLOSING THE CURRENTLY LOADED LIST
     store.closeCurrentList = function () {
-        history.push("/");
+        tps.clearAllTransactions();
+        //history.push("/");
         storeReducer({
             type: GlobalStoreActionType.CLOSE_CURRENT_LIST,
             payload: {}
@@ -395,7 +396,7 @@ function GlobalStoreContextProvider(props) {
                         type: GlobalStoreActionType.SET_CURRENT_LIST,
                         payload: playlist
                     });
-                    history.push("/playlist/" + playlist._id);
+                    
                 }
             }
         }
@@ -527,6 +528,14 @@ function GlobalStoreContextProvider(props) {
     }
     store.canClose = function() {
         return (store.currentList !== null);
+    }
+    store.isListOpen = function(id){
+        console.log('open');
+        if(!store.currentList)
+            return true;
+        console.log(store.currentList);
+        console.log(id);
+        return store.currentList._id === id;
     }
     // THIS FUNCTION ENABLES THE PROCESS OF EDITING A LIST NAME
     store.setIsListNameEditActive = function () {

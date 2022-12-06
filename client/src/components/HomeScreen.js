@@ -1,11 +1,7 @@
 import React, { useContext, useEffect } from 'react'
 import { GlobalStoreContext } from '../store'
 import ListCard from './ListCard.js'
-import MUIDeleteModal from './MUIDeleteModal'
 
-import AddIcon from '@mui/icons-material/Add';
-import Fab from '@mui/material/Fab'
-import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import Box from '@mui/material/Box';
@@ -35,7 +31,9 @@ const HomeScreen = () => {
     function handleSearch(){
         console.log("Search");
     }
-
+    let text ="";
+    if (store.currentList)
+        text = store.currentList.name;
     return (
         <Grid container sx={{ bgcolor: 'primary.dark' }}>
                 <Grid item xs = {12} sm = {6} md = {4} lg = {3} xl = {2} sx={{pb: 1}}>
@@ -64,7 +62,7 @@ const HomeScreen = () => {
                 <Grid item xs ={12} md = {7} >
                     
                         <List sx={{ width: '100%',
-        overflow: 'auto',maxHeight:'65vh'}}>
+                                    overflow: 'auto',maxHeight:'65vh'}}>
                         {
                         store.idNamePairs.map((pair) => (
                             <ListCard
@@ -74,7 +72,6 @@ const HomeScreen = () => {
                                 />
                             ))
                         }
-                        <MUIDeleteModal />
                         </List>;
                         
                     
@@ -82,16 +79,14 @@ const HomeScreen = () => {
                 <Grid item xs ={12} md = {5} >
                     <Box sx={{height:'65vh'}}>edfbhtbrtd</Box>
                 </Grid>
-                <Grid item xs ={12} md = {12} >
+                <Grid item xs ={12} md = {12} sx={{textAlign:'center'}}>
                     <Box>
-                        <Fab
-                            aria-label="add"
-                            id="add-list-button"
-                            onClick={handleCreateNewList}>
-                            <AddIcon />
-                        </Fab>
+                        <Button onClick={handleCreateNewList} sx={{color:'black',fontSize:'80px', maxHeight:'7vh', bottom:'10px'}}>
+                            +
+                        </Button>
                         
                         <Typography variant="dense" sx={{fontSize:'50px'}} >Your Lists</Typography>
+                        <Typography variant="h4">{text}</Typography>
                     </Box>
                 </Grid>
         </Grid>

@@ -40,6 +40,7 @@ body {
 
 #add-list-button {
   float: center;
+  
 }
 
 
@@ -49,7 +50,6 @@ body {
 .unselected-list-card {
   font-size: 18pt;
   margin: 10px;
-  padding: 20px;
   border-radius: 13px;
 }
 
@@ -63,8 +63,7 @@ body {
 
 .unselected-list-card:hover {
   cursor: pointer;
-  background-color: var(--swatch-contrast);
-  color: white;
+  background-color: white;
 }
 
 .selected-list-card {
@@ -76,9 +75,46 @@ body {
   background-color: var(--swatch-complement);
 }
 
-.list-card-button {
-  float: right;
-  transform: scale(1.8);
+#list-card-button {
+  float: left;
+  font-size: 4.5vh;
+  font-weight: 0.1;
+  color:#111111;
+}
+.song-card,
+.selected-song-card,
+.unselected-song-card {
+  font-size: 18pt;
+  margin-bottom: 4px;
+  border-radius: 13px;
+}
+.song-card:aria-disabled,
+.song-card[aria-disabled] {
+  border: 1px solid #999999;
+  background-color: #cccccc;
+  color: #666666;
+  pointer-events: none;
+}
+
+.unselected-song-card:hover {
+  cursor: pointer;
+  background-color: grey;
+}
+
+.selected-song-card {
+  background-color: var(--swatch-accent);
+  color: white;
+}
+
+.unselected-song-card {
+  background-color: var(--swatch-complement);
+}
+
+#song-card-button {
+  float: left;
+  font-size: 4.5vh;
+  font-weight: 0.1;
+  color:#111111;
 }
 #splash-button {
   font-style: 'bold';

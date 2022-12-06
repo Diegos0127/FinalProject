@@ -7,13 +7,9 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { grey,purple} from '@mui/material/colors'
 import {
     AppBanner,
-    HomeScreen,
     HomeWrapper,
     LoginScreen,
-    RegisterScreen,
-    SplashScreen,
-    Statusbar,
-    WorkspaceScreen
+    RegisterScreen
 } from './components'
 /*
     This is our application's top-level component.
@@ -50,7 +46,6 @@ const App = () => {
                             <Route path="/register/" exact component={RegisterScreen} />
                             
                         </Switch>
-                        <Statusbar />
                     </GlobalStoreContextProvider>
                 </AuthContextProvider>
             </ThemeProvider>
