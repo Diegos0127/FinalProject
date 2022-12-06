@@ -50,10 +50,8 @@ function WorkspaceSubscreen() {
             sx={{ width: '100%' }}
         >
             {songs}
-            <Box className = {"song-card unselected-song-card"} sx={{ display: 'flex', p: 1, backgroundColor:'info.dark', textAlign:'center'}}
-            style={{ width: '98%', fontSize: '20pt' }} >
-                <Button
-                sx={{color:'white',fontSize:'60px', maxHeight:'5vh', backgroundColor:'info.dark'}}
+            <Box sx={{ display: 'flex', p: 1, backgroundColor:'info.dark', borderRadius:'12px'}} justifyContent="center" >
+                <Button sx={{color:'white',fontSize:'60px', maxHeight:'5vh', backgroundColor:'info.dark'}}
                 onClick={handleAddNewSong}>
                 + 
             </Button>

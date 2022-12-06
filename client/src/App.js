@@ -4,7 +4,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import { AuthContextProvider } from './auth';
 import { GlobalStoreContextProvider } from './store'
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { grey,purple} from '@mui/material/colors'
+import { purple} from '@mui/material/colors'
 import {
     AppBanner,
     HomeWrapper,
@@ -22,7 +22,6 @@ import {
   
   @author Diego Sandoval
 */
-const mainColor = grey[400];
 const theme = createTheme({
     palette:{
         primary: {
@@ -30,7 +29,12 @@ const theme = createTheme({
             light:'#ffffff',
             dark:'#c4c4c4'
         },
-        secondary:purple
+        secondary:purple,
+        info:{
+            main:'#ffffff',
+            dark:'#2C2F6D',
+            light:'#D4D4F3'
+        }
     }
 })
 const App = () => {   

@@ -23,9 +23,11 @@ export default function MUIDeleteModal() {
         name = store.listMarkedForDeletion.name;
     }
     function handleDeleteList(event) {
+        event.stopPropagation();
         store.deleteMarkedList();
     }
     function handleCloseModal(event) {
+        event.stopPropagation();
         store.unmarkListForDeletion();
     }
 

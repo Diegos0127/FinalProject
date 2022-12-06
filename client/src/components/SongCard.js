@@ -41,6 +41,7 @@ function SongCard(props) {
     }
     function handleClick(event) {
         // DOUBLE CLICK IS FOR SONG EDITING
+        event.stopPropagation();
         if (event.detail === 2) {
             store.showEditSongModal(index, song);
         }
@@ -51,7 +52,7 @@ function SongCard(props) {
         <Box
             key={index}
             id={'song-' + index + '-card'}
-            sx={{ display: 'flex', p: 1, backgroundColor:'info.dark'}}
+            sx={{ display: 'flex', p: 1, backgroundColor:'info.dark', color:'white'}}
             style={{ width: '98%', fontSize: '20pt' }}
             className={cardClass}
             onDragStart={handleDragStart}

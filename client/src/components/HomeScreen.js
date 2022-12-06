@@ -31,14 +31,17 @@ const HomeScreen = () => {
     function handleSearch(){
         console.log("Search");
     }
+    function home(){
+        store.goHome();
+    }
     let text ="";
-    if (store.currentList)
-        text = store.currentList.name;
+    if (store.currentPlayingList)
+        text = store.currentPlayingList.name;
     return (
         <Grid container sx={{ bgcolor: 'primary.dark' }}>
                 <Grid item xs = {12} sm = {6} md = {4} lg = {3} xl = {2} sx={{pb: 1}}>
                     <Box  >
-                        <Button startIcon={<HomeOutlinedIcon id = "selector-icon"/>}></Button >
+                        <Button startIcon={<HomeOutlinedIcon id = "selector-icon" onClick={home}/>}></Button >
                         <Button startIcon={<GroupsOutlinedIcon id = "selector-icon" />}></Button>
                         <Button startIcon={<PersonOutlineOutlinedIcon id = "selector-icon"/>}> </Button>
                     </Box>
@@ -80,14 +83,13 @@ const HomeScreen = () => {
                     <Box sx={{height:'65vh'}}>edfbhtbrtd</Box>
                 </Grid>
                 <Grid item xs ={12} md = {12} sx={{textAlign:'center'}}>
+                    {store.isHome()?
                     <Box>
                         <Button onClick={handleCreateNewList} sx={{color:'black',fontSize:'80px', maxHeight:'7vh', bottom:'10px'}}>
                             +
                         </Button>
-                        
                         <Typography variant="dense" sx={{fontSize:'50px'}} >Your Lists</Typography>
-                        <Typography variant="h4">{text}</Typography>
-                    </Box>
+                    </Box>: <Typography variant="h4">{text}</Typography>}
                 </Grid>
         </Grid>
         )

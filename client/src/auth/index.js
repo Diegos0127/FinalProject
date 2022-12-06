@@ -91,9 +91,9 @@ function AuthContextProvider(props) {
         }
     }
 
-    auth.registerUser = async function(firstName, lastName, email, password, passwordVerify) {
+    auth.registerUser = async function(userName, email, firstName, lastName, password, passwordVerify) {
         try{
-            let response = await api.registerUser(firstName, lastName, email, password, passwordVerify);    
+            let response = await api.registerUser(userName, email, firstName, lastName, password, passwordVerify);    
             if (response.status === 200) {
                 console.log(response.data);
                 authReducer({
@@ -158,9 +158,9 @@ function AuthContextProvider(props) {
             initials += auth.user.firstName.charAt(0);
             initials += auth.user.lastName.charAt(0);
         }
-        console.log("user initials: " + initials);
         return initials;
     }
+    
     auth.isUserRegistrationModalOpen = function(){
         console.log(auth.CURRENT_MODAL)
         return auth.CURRENT_MODAL === CurrentModal.USER_REGISTRATION;

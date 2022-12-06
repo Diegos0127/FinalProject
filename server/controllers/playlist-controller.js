@@ -9,8 +9,12 @@ const User = require('../models/user-model');
 */
 createPlaylist = (req, res) => {
     const body = req.body;
+    body.likes = [];
+    body.dislikes = [];
+    body.listens = 0;
+    body.comments = [];
+    body.publishedDate = '1970'+'-'+'0'+'-'+'1'+'-'+'0'+'-'+'0'+'-'+'0';
     console.log("createPlaylist body: " + JSON.stringify(body));
-
     if (!body) {
         return res.status(400).json({
             success: false,
@@ -38,6 +42,7 @@ createPlaylist = (req, res) => {
                         })
                     })
                     .catch(error => {
+                        console.log("Booooooooo");
                         return res.status(400).json({
                             errorMessage: 'Playlist Not Created!'
                         })

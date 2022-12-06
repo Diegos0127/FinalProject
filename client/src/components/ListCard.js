@@ -1,5 +1,6 @@
 import { useContext, useState } from 'react'
 import { GlobalStoreContext } from '../store'
+import AuthContext from '../auth'
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
@@ -21,14 +22,16 @@ import EditToolbar from './EditToolbar';
 */
 function ListCard(props) {
     const { store } = useContext(GlobalStoreContext);
+    const { auth } = useContext(AuthContext);
     const [editActive, setEditActive] = useState(false);
     const [openContentActive, setOpenContentActive] = useState(false);
     const [text, setText] = useState("");
     const { idNamePair, selected } = props;
 
-    function handleClick (event,id) {
-        if (event.detail === 1) {
-            console.log('yay');
+    function handleClick (event, id) {
+        if (event.detail === 1 ) {
+            console.log("clicked list card");
+            store.setCurrentPlayingList(id);
         }
         else if (event.detail === 2 && !store.currentList) {
             handleToggleEdit(event);
@@ -55,7 +58,8 @@ function ListCard(props) {
     function handleUpdateText(event) {
         setText(event.target.value);
     }
-    function toggleOpenContent(){
+    function toggleOpenContent(event){
+        event.stopPropagation();
         store.closeCurrentList();
         if(!openContentActive)
             store.setCurrentList(idNamePair._id);
@@ -66,27 +70,22 @@ function ListCard(props) {
             setOpenContentActive(false);
         }
     }
-    /*
-    let selectClass = "unselected-list-card";
-    if (selected) {
-        selectClass = "selected-list-card";
-    }
-    let cardStatus = false;
-    if (store.isListNameEditActive) {
-        cardStatus = true;
-    }*/
+    let bgcolor = 'info.light';
+    if(store.currentPlayingList&&store.currentPlayingList._id===idNamePair._id)
+        bgcolor = '#D3B04A';
+
     let cardElement =
         <Box
             id={idNamePair._id}
             key={idNamePair._id}
             className={"list-card unselected-list-card"}
-            sx={{ marginTop: '0.1%', display: 'flex', p: 1,fontWeight:'bold'}}
+            sx={{ marginTop: '0.1%', display: 'flex', p: 1,fontWeight:'bold', backgroundColor: bgcolor}}
             onClick={(event) => { handleClick(event, idNamePair._id)}}
         >
             <Grid container >
                 <Grid item xs ={12} xl = {7} sx={{ p: 1}}>
                     <Box >{idNamePair.name}</Box>
-                    <Typography sx={{fontWeight:'bold'}}>By: {idNamePair.name}</Typography>
+                    <Typography sx={{fontWeight:'bold'}}>By: {auth.user.userName}</Typography>
                 </Grid>
                 <Grid item xs ={12} xl = {3}>
                     <Button startIcon={<ThumbUpOffAltOutlinedIcon id = "list-card-button"/>}></Button >

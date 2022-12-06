@@ -22,7 +22,7 @@ const SplashScreen = () => {
                 your awesome playlists, feel free to publish them so everyone can see them and share their opinion!
             </Typography>
             <br/>
-            <Grid container>
+            <Grid container sx = {{flexGrow:1}}>
                 <Grid item md = {1}></Grid>
                 <Grid item md = {4}>
                     <Button id = "splash-button" variant='outlined' >Continue As Guest</Button>
