@@ -42,6 +42,11 @@ const CurrentModal = {
     EDIT_SONG : "EDIT_SONG",
     REMOVE_SONG : "REMOVE_SONG"
 }
+const HomeSubscreen = {
+    HOME : "HOME",
+    ALL_SONGS: "ALL_SONGS",
+    USER_SONGS: "USER_SONGS"
+}
 
 // WITH THIS WE'RE MAKING OUR GLOBAL DATA STORE
 // AVAILABLE TO THE REST OF THE APPLICATION
@@ -268,6 +273,11 @@ function GlobalStoreContextProvider(props) {
         if (response.status === 201) {
             tps.clearAllTransactions();
             let newList = response.data.playlist;
+            let pair = {
+                _id: newList._id,
+                name: newList.name
+            };
+            store.idNamePairs.push(pair);
             storeReducer({
                 type: GlobalStoreActionType.CREATE_NEW_LIST,
                 payload: newList
@@ -275,7 +285,8 @@ function GlobalStoreContextProvider(props) {
             );
 
             // IF IT'S A VALID LIST THEN LET'S START EDITING IT
-            history.push("/playlist/" + newList._id);
+            //history.push("/playlist/" + newList._id);
+            
         }
         else {
             console.log("API FAILED TO CREATE A NEW LIST");

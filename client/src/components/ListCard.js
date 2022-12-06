@@ -1,11 +1,13 @@
 import { useContext, useState } from 'react'
 import { GlobalStoreContext } from '../store'
 import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
 import ListItem from '@mui/material/ListItem';
 import TextField from '@mui/material/TextField';
+import { Typography } from '@mui/material';
 
 /*
     This is a card in our list of top 5 lists. It lets select
@@ -33,7 +35,14 @@ function ListCard(props) {
             store.setCurrentList(id);
         }
     }
-
+    function handleClick (event,id) {
+        if (event.detail === 1) {
+            console.log(id);
+        }
+        else if (event.detail === 2) {
+            handleToggleEdit(event);
+        }
+    }
     function handleToggleEdit(event) {
         event.stopPropagation();
         toggleEdit();
@@ -78,25 +87,21 @@ function ListCard(props) {
             id={idNamePair._id}
             key={idNamePair._id}
             className={"list-card unselected-list-card"}
-            sx={{ marginTop: '15px', display: 'flex', p: 1 }}
-            style={{ width: '100%', fontSize: '48pt' }}
+            sx={{ marginTop: '0.1%', display: 'flex', p: 1,fontWeight:'bold'}}
             onClick={(event) => {
-                handleLoadList(event, idNamePair._id)
+                handleClick(event, idNamePair._id)
             }}
         >
-            <Box sx={{ p: 1, flexGrow: 1 }}>{idNamePair.name}</Box>
-            <Box sx={{ p: 1 }}>
-                <IconButton onClick={handleToggleEdit} aria-label='edit'>
-                    <EditIcon style={{fontSize:'48pt'}} />
-                </IconButton>
-            </Box>
-            <Box sx={{ p: 1 }}>
-                <IconButton onClick={(event) => {
-                        handleDeleteList(event, idNamePair._id)
-                    }} aria-label='delete'>
-                    <DeleteIcon style={{fontSize:'48pt'}} />
-                </IconButton>
-            </Box>
+            <Grid container >
+                <Grid item xs ={12} xl = {7} sx={{ p: 1}}>
+                    <Box >{idNamePair.name}</Box>
+                    <Typography sx={{fontWeight:'bold'}}>By: {idNamePair.name}</Typography>
+                    <Typography sx={{fontWeight:'bold'}}>Published: {idNamePair.name}</Typography>
+                </Grid>
+                    <Box sx={{ p: 1}}>{idNamePair.name}</Box>
+                <Grid item xs ={12} xl = {5}></Grid>
+            </Grid>
+           
         </Box>
 
     if (editActive) {

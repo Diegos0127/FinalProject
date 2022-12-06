@@ -1,14 +1,16 @@
 import { useContext, useState } from 'react';
+import { useHistory } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import AuthContext from '../auth';
 import { GlobalStoreContext } from '../store'
-
+import { purple} from '@mui/material/colors'
 import EditToolbar from './EditToolbar'
 
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
@@ -19,7 +21,7 @@ export default function AppBanner() {
     const { store } = useContext(GlobalStoreContext);
     const [anchorEl, setAnchorEl] = useState(null);
     const isMenuOpen = Boolean(anchorEl);
-
+    const iconColor = purple['A200']
     const handleProfileMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -32,7 +34,6 @@ export default function AppBanner() {
         handleMenuClose();
         auth.logoutUser();
     }
-
     const menuId = 'primary-search-account-menu';
     const loggedOutMenu = (
         <Menu
@@ -77,46 +78,32 @@ export default function AppBanner() {
     let menu = loggedOutMenu;
     if (auth.loggedIn) {
         menu = loggedInMenu;
-        if (store.currentList) {
+        if (store.currentList) 
             editToolbar = <EditToolbar />;
-        }
-    }
-    
-    function getAccountMenu(loggedIn) {
-        let userInitials = auth.getUserInitials();
-        console.log("userInitials: " + userInitials);
-        if (loggedIn) 
-            return <div>{userInitials}</div>;
-        else
-            return <AccountCircle />;
     }
 
     return (
-        <Box sx={{ flexGrow: 1 }} >
-            <AppBar position="static" color="secondary">
+        <Box sx={{ width: "100%", height: "6.5vh" }} >
+            <AppBar position="static" sx={{ bgcolor: 'primary.main',width: "100%", height: "100%" }}>
                 <Toolbar>
-                    <Typography                        
-                        variant="h4"
-                        noWrap
-                        component="div"
-                        sx={{ display: { xs: 'none', sm: 'block' } }}                        
-                    >
-                        <Link style={{ textDecoration: 'none', color: 'white' }} to='/'>⌂</Link>
-                    </Typography>
-                    <Box sx={{ flexGrow: 1 }}>{editToolbar}</Box>
-                    <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+                    <img style={{width: "auto", height: "100%"}}src={process.env.PUBLIC_URL+'PlaylisterLogo.png'}  />
+                    <Box sx={{ flexGrow: 1 }}></Box>
+                    <Box sx={{ display: {  md: 'flex' } }}>
                         <IconButton
-                            size="large"
+                            
                             edge="end"
                             aria-label="account of current user"
                             aria-controls={menuId}
                             aria-haspopup="true"
                             onClick={handleProfileMenuOpen}
                             color="inherit"
+                            sx = {{backgroundColor: iconColor, border:2, borderColor:'black'}}
+
                         >
-                            { getAccountMenu(auth.loggedIn) }
+                            { auth.loggedIn ? <div>{auth.getUserInitials()}</div>:<AccountCircle />}
                         </IconButton>
-                    </Box>
+                    </Box> 
+                    
                 </Toolbar>
             </AppBar>
             {

@@ -18,36 +18,41 @@ import {
 /*
     This is our application's top-level component.
     
-    @author McKilla Gorilla
+    @author Diego Sandoval
 */
 /*
   This is the entry-point for our application. Notice that we
   inject our store into all the components in our application.
   
-  @author McKilla Gorilla
+  @author Diego Sandoval
 */
+const mainColor = grey[400];
 const theme = createTheme({
     palette:{
-        primary:grey,
-        secondary:grey
+        primary: {
+            main:'#e0e0e0',
+            light:'#ffffff',
+            dark:'#c4c4c4'
+        },
+        secondary:purple
     }
 })
 const App = () => {   
     return (
         <BrowserRouter>
-        <ThemeProvider theme = {theme}>
-            <AuthContextProvider>
-                <GlobalStoreContextProvider>              
-                    <AppBanner />
-                    <Switch>
-                        <Route path="/" exact component={HomeWrapper} />
-                        <Route path="/login/" exact component={LoginScreen} />
-                        <Route path="/register/" exact component={RegisterScreen} />
-                        <Route path="/playlist/:id" exact component={WorkspaceScreen} />
-                    </Switch>
-                    <Statusbar />
-                </GlobalStoreContextProvider>
-            </AuthContextProvider>
+            <ThemeProvider theme = {theme}>
+                <AuthContextProvider>
+                    <GlobalStoreContextProvider>              
+                        <AppBanner />
+                        <Switch>
+                            <Route path="/" exact component={HomeWrapper} />
+                            <Route path="/login/" exact component={LoginScreen} />
+                            <Route path="/register/" exact component={RegisterScreen} />
+                            
+                        </Switch>
+                        <Statusbar />
+                    </GlobalStoreContextProvider>
+                </AuthContextProvider>
             </ThemeProvider>
         </BrowserRouter>
     )
