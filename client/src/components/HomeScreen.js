@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { GlobalStoreContext } from '../store'
 import ListCard from './ListCard.js'
 
@@ -6,6 +6,8 @@ import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid'
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
@@ -20,13 +22,15 @@ import Typography from '@mui/material/Typography'
 */
 const HomeScreen = () => {
     const { store } = useContext(GlobalStoreContext);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const isMenuOpen = Boolean(anchorEl);
 
     useEffect(() => {
         store.loadPlaylists();
     }, []);
 
     function handleCreateNewList() {
-        store.createNewList();
+        store.createNewList([]);
     }
     function handleSearch(){
         console.log("Search");
@@ -34,6 +38,66 @@ const HomeScreen = () => {
     function home(){
         store.goHome();
     }
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
+    const handleSortMenuOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleLogout = () => {
+        handleMenuClose();
+        console.log("Trying to sort");
+    }
+    function  handleSort(sortType){
+        handleMenuClose();
+        store.sort(sortType);
+    }
+
+    const menuId = 'primary-search-account-menu';
+    const sortMenu = (
+        <Menu
+            anchorEl={anchorEl}
+            anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+            }}
+            
+            keepMounted
+            transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+            }}
+            open={isMenuOpen}
+            onClose={handleMenuClose}
+        >
+            <MenuItem onClick={(event)=>handleSort("creation")}>{"Creation Date (Old-New)"}</MenuItem>
+            <MenuItem onClick={(event)=>handleSort("edit")}>{"Last Edit Date (New-Old)"}</MenuItem>
+            <MenuItem onClick={(event)=>handleSort("name")}>{"Name (A-Z)"}</MenuItem>
+            <MenuItem onClick={(event)=>handleSort("publish")}>{"Publish Date (Newest)"}</MenuItem>
+            <MenuItem onClick={(event)=>handleSort("listens")}>{"Listens (High-Low)"}</MenuItem>
+            <MenuItem onClick={(event)=>handleSort("likes")}>{"Likes (High-Low)"}</MenuItem>
+            <MenuItem onClick={(event)=>handleSort("dislikes")}>{"Dislikes (High-Low)"}</MenuItem>
+        </Menu>
+    );
+    const loggedInMenu = 
+        <Menu
+            anchorEl={anchorEl}
+            anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+            }}
+            id={menuId}
+            keepMounted
+            transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+            }}
+            open={isMenuOpen}
+            onClose={handleMenuClose}
+        >
+            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+        </Menu>        
+
     let text ="";
     if (store.currentPlayingList)
         text = store.currentPlayingList.name;
@@ -68,7 +132,14 @@ const HomeScreen = () => {
                                 <Typography max height sx={{fontWeight:'bold', fontSize:'22px', height:'10px', textAlign:'center', mt:3 }}>SORT BY</Typography>
                             </Grid>
                             <Grid item md = {3} >
-                                <Button startIcon={<SortIcon id = "selector-icon"/>}> </Button>
+                                <Button startIcon={<SortIcon id = "selector-icon"/>}
+                                        edge="end"
+                                        aria-label="account of current user"
+                                        aria-controls={menuId}
+                                        aria-haspopup="true"
+                                        onClick={handleSortMenuOpen}> 
+                                
+                                </Button>
                             </Grid>
                         </Grid>
                 </Grid>
@@ -89,6 +160,7 @@ const HomeScreen = () => {
                         <Typography variant="dense" sx={{fontSize:'50px'}} >Your Lists</Typography>
                     </Box>: <Typography variant="h4">{text}</Typography>}
                 </Grid>
+                { sortMenu  }
         </Grid>
         )
 }

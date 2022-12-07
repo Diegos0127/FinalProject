@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 import AuthContext from '../auth'
 import Copyright from './Copyright'
+import { useHistory } from 'react-router-dom'
 
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
@@ -16,6 +17,7 @@ import MUIUserRegistrationModal from './MUIUserRegistrationModal';
 
 export default function RegisterScreen() {
     const { auth } = useContext(AuthContext);
+    const history = useHistory();
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -122,7 +124,7 @@ export default function RegisterScreen() {
                         </Button>
                         <Grid container justifyContent="flex-end">
                             <Grid item>
-                                <Link href="/login/" variant="body2">
+                                <Link variant="body2" onClick={(event)=>history.push("/login/")} sx={{color:'#2075CD', textDecoration: 'underline'}}>
                                     Already have an account? Sign in
                                 </Link>
                             </Grid>

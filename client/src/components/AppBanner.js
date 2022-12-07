@@ -20,7 +20,7 @@ export default function AppBanner() {
     const [anchorEl, setAnchorEl] = useState(null);
     const isMenuOpen = Boolean(anchorEl);
     const iconColor = purple['A200']
-    const handleProfileMenuOpen = (event) => {
+    const handleSortMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
     };
 
@@ -85,7 +85,7 @@ export default function AppBanner() {
                             aria-label="account of current user"
                             aria-controls={menuId}
                             aria-haspopup="true"
-                            onClick={handleProfileMenuOpen}
+                            onClick={handleSortMenuOpen}
                             color="inherit"
                             sx = {{backgroundColor: iconColor, border:2, borderColor:'black'}}
 

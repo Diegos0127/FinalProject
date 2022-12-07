@@ -43,11 +43,10 @@ function SongCard(props) {
     function handleClick(event) {
         // DOUBLE CLICK IS FOR SONG EDITING
         event.stopPropagation();
-        if (event.detail === 2) {
+        if (event.detail === 2) 
             store.showEditSongModal(index, song);
-        }
     }
-
+    
     let cardClass = "song-card unselected-song-card";
     return (
         <Box
@@ -67,11 +66,11 @@ function SongCard(props) {
             <Box sx={{ p: 1, flexGrow: 1 }}>
                 {index + 1}. {song.title} by {song.artist}
             </Box>
-            <Box sx={{height:"50%"}}>
+            {!store.isCurrentPublished()?<Box sx={{height:"75%"}}>
                 <IconButton onClick={handleRemoveSong} aria-label='delete'>
                     <CloseIcon style={{fontSize:'36pt', color: 'white'}} />
                 </IconButton>
-            </Box>
+            </Box>:""}
         </Box>
     );
 }

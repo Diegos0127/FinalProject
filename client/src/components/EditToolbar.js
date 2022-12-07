@@ -8,10 +8,13 @@ import Button from '@mui/material/Button';
     
     @author McKilla Gorilla
 */
-function EditToolbar(props) {
+function EditToolbar() {
     const { store } = useContext(GlobalStoreContext);
-    const { isPublished } = props;
 
+    let isPublished = store.isCurrentPublished();
+    let owner = false;
+    if(store.currentList)
+        owner = store.currentList.ownerUserName === store.getUserName();
     async function handleDeleteList(event) {
         event.stopPropagation();
         store.markListForDeletion();
@@ -30,6 +33,10 @@ function EditToolbar(props) {
     function handlePublish(event) {
         event.stopPropagation();
         store.publishPlaylist();
+    }
+    function handleDuplicateList(event){
+        event.stopPropagation();
+        store.createNewList(store.currentList.songs, store.currentList.name);
     }
     return (
         <div>
@@ -53,7 +60,7 @@ function EditToolbar(props) {
                 variant="contained">
                 Publish
             </Button>:" "}
-            {!isPublished?<Button
+            {!isPublished||owner?<Button
                 onClick={handleDeleteList}
                 id='add-song-button'
                 variant="contained">
@@ -62,6 +69,7 @@ function EditToolbar(props) {
             <Button 
                 disabled={!store.canClose()}
                 id='close-button'
+                onClick={handleDuplicateList}
                 variant="contained">
                     Duplicate
             </Button>

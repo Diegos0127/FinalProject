@@ -120,9 +120,9 @@ registerUser = async (req, res) => {
                 })
         }
         console.log("password and password verify match");
-        const existingUser = await User.findOne({ email: email });
-        console.log("existingUser: " + existingUser);
-        if (existingUser) {
+        const existingUserEmail = await User.findOne({ email: email });
+        console.log("existingUserEmail: " + existingUserEmail);
+        if (existingUserEmail) {
             return res
                 .status(400)
                 .json({
@@ -130,7 +130,16 @@ registerUser = async (req, res) => {
                     errorMessage: "An account with this email address already exists."
                 })
         }
-
+        const existingUserName = await User.findOne({ userName: userName });
+        console.log("existingUserName: " + existingUserName);
+        if (existingUserName) {
+            return res
+                .status(400)
+                .json({
+                    success: false,
+                    errorMessage: "An account with this User Name already exists."
+                })
+        }
         const saltRounds = 10;
         const salt = await bcrypt.genSalt(saltRounds);
         const passwordHash = await bcrypt.hash(password, salt);

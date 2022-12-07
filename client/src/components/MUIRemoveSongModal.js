@@ -40,6 +40,7 @@ export default function MUIRemoveSongModal() {
     return (
         <Modal
             open={store.isRemoveSongModalOpen()}
+            onClick = {(event)=> event.stopPropagation()}
         >
             <Box sx={style}>
             <div

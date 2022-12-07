@@ -13,7 +13,7 @@ createPlaylist = (req, res) => {
     body.dislikes = [];
     body.listens = 0;
     body.comments = [];
-    body.publishedDate = "1970-0-1,0:0:0";
+    body.publishedDate = "1970-00-01,0";
     console.log("createPlaylist body: " + JSON.stringify(body));
     if (!body) {
         return res.status(400).json({
@@ -184,6 +184,8 @@ updatePlaylist = async (req, res) => {
                     list.name = body.playlist.name;
                     list.songs = body.playlist.songs;
                     list.publishedDate = body.playlist.publishedDate;
+                    list.likes = body.playlist.likes;
+                    list.dislikes = body.playlist.dislikes;
                     list
                         .save()
                         .then(() => {

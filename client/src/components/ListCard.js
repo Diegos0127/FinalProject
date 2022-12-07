@@ -28,6 +28,8 @@ function ListCard(props) {
     const [text, setText] = useState("");
     const { playlist, selected } = props;
 
+    let monthsArray = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug','Sept','Oct','Nov','Dec'];
+
     function handleClick (event, id) {
         if (event.detail === 1 ) {
             console.log("clicked list card");
@@ -70,19 +72,27 @@ function ListCard(props) {
             setOpenContentActive(false);
         }
     }
-    let isPublished = false;
-    if(playlist.publishedDate !=="1970-0-1,0:0:0")
-        isPublished = true;
+    function handleLike(event){
+        event.stopPropagation();
+        store.thumbsPlaylist(playlist._id,true);
+    }
+    function handleDislike(event){
+        event.stopPropagation();
+        store.thumbsPlaylist(playlist._id,false);
+    }
+    let isPublished = (playlist.publishedDate !=="1970-00-01,0");
     let likeButton = "";
     let dislikeButton = "";
+    let dates = playlist.publishedDate.split("-");
+    let displayDates = monthsArray[dates[1]]+" "+dates[2].split(",")[0]+", "+dates[0];
 
     if(isPublished){
-        likeButton = <Grid item xs ={12} xl = {3}>
-        <Button startIcon={<ThumbUpOffAltOutlinedIcon id = "list-card-button"/>}></Button >
+        likeButton = <Grid item xs ={12} xl = {3} >
+        <Button onClick={handleLike} startIcon={<ThumbUpOffAltOutlinedIcon id = "list-card-button" />}></Button >
         {playlist.likes.length}
     </Grid>;
        dislikeButton = <Grid item xs ={12} xl = {2} >
-       <Button startIcon={<ThumbDownOffAltOutlinedIcon id = "list-card-button"/>}></Button >
+       <Button onClick={handleDislike} startIcon={<ThumbDownOffAltOutlinedIcon id = "list-card-button" />}></Button >
        {playlist.dislikes.length}
    </Grid>;
     }
@@ -104,17 +114,17 @@ function ListCard(props) {
             <Grid container >
                 <Grid item xs ={12} xl = {7} sx={{ p: 1}}>
                     <Box >{playlist.name}</Box>
-                    <Typography sx={{fontWeight:'bold'}}>By: {auth.user.userName}</Typography>
+                    <Typography sx={{fontWeight:'bold'}}>By: {playlist.ownerUserName}</Typography>
                 </Grid>
                 {likeButton} {dislikeButton}
                 {openContentActive? <Grid item xs ={12} xl = {12}>
                     <WorkspaceSubscreen></WorkspaceSubscreen>
                 </Grid>:""}
                 {openContentActive? <Grid item xs ={12} xl = {12}>
-                    <EditToolbar isPublished={isPublished}></EditToolbar>
+                    <EditToolbar></EditToolbar>
                 </Grid>:""}
                 <Grid item xs ={12} xl = {7} sx={{ p: 1, mt:4 }} >
-                    {isPublished?<Typography sx={{fontWeight:'bold'}}>Published: {playlist.publishedDate}</Typography>:""}
+                    {isPublished?<Typography sx={{fontWeight:'bold'}}>Published: {displayDates}</Typography>:""}
                 </Grid>
                 <Grid item xs ={12} xl = {4} sx={{ p: 1, mt:4 }}>
                     {isPublished?<Typography sx={{fontWeight:'bold'}}>Listens: {playlist.listens}</Typography>:""}

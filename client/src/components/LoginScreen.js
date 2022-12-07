@@ -3,6 +3,7 @@ import AuthContext from '../auth'
 
 import Copyright from './Copyright'
 import MUIUserRegistrationModal from './MUIUserRegistrationModal';
+import { useHistory } from 'react-router-dom'
 
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
@@ -11,7 +12,6 @@ import Checkbox from '@mui/material/Checkbox';
 import CssBaseline from '@mui/material/CssBaseline';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
-import Link from '@mui/material/Link';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
@@ -19,6 +19,7 @@ import Typography from '@mui/material/Typography';
 
 export default function LoginScreen() {
     const { auth } = useContext(AuthContext);
+    const history = useHistory();
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -84,10 +85,7 @@ export default function LoginScreen() {
                             id="password"
                             autoComplete="current-password"
                         />
-                        <FormControlLabel
-                            control={<Checkbox value="remember" color="primary" />}
-                            label="Remember me"
-                        />
+                        
                         <Button
                             type="submit"
                             fullWidth
@@ -98,14 +96,12 @@ export default function LoginScreen() {
                         </Button>
                         <Grid container>
                             <Grid item xs>
-                                <Link href="#" variant="body2">
-                                    
-                                </Link>
+                                
                             </Grid>
                             <Grid item>
-                                <Link href="/register/" variant="body2">
-                                    {"Don't have an account? Sign Up"}
-                                </Link>
+                                <Typography variant="body2" onClick={(event)=>history.push("/register/")} sx={{color:'#2075CD', textDecoration: 'underline'}}>
+                                    Don't have an account? Sign Up
+                                </Typography>
                             </Grid>
                         </Grid>
                         <Copyright sx={{ mt: 5 }} />

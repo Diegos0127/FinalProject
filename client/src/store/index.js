@@ -29,10 +29,10 @@ export const GlobalStoreActionType = {
     SET_CURRENT_LIST: "SET_CURRENT_LIST",
     SET_CURRENT_PLAYING_LIST: "SET_CURRENT_PLAYING_LIST",
     SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
-    EDIT_SONG: "EDIT_SONG",
-    REMOVE_SONG: "REMOVE_SONG",
+    OPEN_MODAL: "OPEN_MODAL",
     HIDE_MODALS: "HIDE_MODALS",
-    GO_HOME: "GO_HOME"
+    GO_HOME: "GO_HOME",
+    UPDATE_PLAYLISTS:"UPDATE_PLAYLISTS"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -85,9 +85,26 @@ function GlobalStoreContextProvider(props) {
                     currentModal : CurrentModal.NONE,
                     currentList: null,
                     homeSubscreen: store.homeSubscreen,
+                    currentPlayingList: store.currentPlayingList,
                     playlists: payload.playlists,
                     currentSongIndex: -1,
                     currentSong: null,
+                    newListCounter: store.newListCounter,
+                    listNameActive: false,
+                    listIdMarkedForDeletion: null,
+                    listMarkedForDeletion: null
+                });
+            }
+            // LIST UPDATE OF ITS NAME
+            case GlobalStoreActionType.UPDATE_PLAYLISTS: {
+                return setStore({
+                    currentModal : CurrentModal.NONE,
+                    currentList: store.currentList,
+                    homeSubscreen: store.homeSubscreen,
+                    currentPlayingList: store.currentPlayingList,
+                    playlists: payload.playlists,
+                    currentSongIndex: store.currentSongIndex,
+                    currentSong: store.currentSong,
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     listIdMarkedForDeletion: null,
@@ -133,6 +150,7 @@ function GlobalStoreContextProvider(props) {
                     currentList: null,
                     homeSubscreen: store.homeSubscreen,
                     playlists: payload.playlists,
+                    currentPlayingList: null,
                     currentSongIndex: -1,
                     currentSong: null,
                     newListCounter: store.newListCounter,
@@ -194,6 +212,7 @@ function GlobalStoreContextProvider(props) {
                 return setStore({
                     currentModal : CurrentModal.NONE,
                     currentList: payload,
+                    currentPlayingList: payload,
                     homeSubscreen: store.homeSubscreen,
                     playlists: store.playlists,
                     currentSongIndex: -1,
@@ -205,27 +224,13 @@ function GlobalStoreContextProvider(props) {
                 });
             }
             // 
-            case GlobalStoreActionType.EDIT_SONG: {
+            case GlobalStoreActionType.OPEN_MODAL: {
                 return setStore({
-                    currentModal : CurrentModal.EDIT_SONG,
+                    currentModal : payload.modal,
                     currentList: store.currentList,
+                    currentPlayingList: payload,
                     currentSongIndex: payload.currentSongIndex,
                     homeSubscreen: store.homeSubscreen,
-                    playlists: store.playlists,
-                    currentSong: payload.currentSong,
-                    newListCounter: store.newListCounter,
-                    listNameActive: false,
-                    listIdMarkedForDeletion: null,
-                    listMarkedForDeletion: null
-                });
-            }
-            case GlobalStoreActionType.REMOVE_SONG: {
-                return setStore({
-                    currentModal : CurrentModal.REMOVE_SONG,
-                    currentList: store.currentList,
-                    currentPlayingList: store.currentPlayingList,
-                    homeSubscreen: store.homeSubscreen,
-                    currentSongIndex: payload.currentSongIndex,
                     playlists: store.playlists,
                     currentSong: payload.currentSong,
                     newListCounter: store.newListCounter,
@@ -253,6 +258,7 @@ function GlobalStoreContextProvider(props) {
                 return setStore({
                     currentModal : CurrentModal.NONE,
                     homeSubscreen: HomeSubscreen.HOME,
+                    currentPlayingList: null,
                     playlists: store.playlists,
                     currentList: null,
                     currentSongIndex: -1,
@@ -295,7 +301,7 @@ function GlobalStoreContextProvider(props) {
                     if(!sameName)
                         response = await api.updatePlaylistById(playlist._id, playlist);
                     if (response.data.success||sameName) {
-                        async function getListPairs(playlist) {
+                        async function getPlaylists(playlist) {
                             response = await api.getPlaylistPairs();
                             if (response.data.success) {
                                 let playlists = response.data.playlists;
@@ -308,7 +314,7 @@ function GlobalStoreContextProvider(props) {
                                 });
                             }
                         }
-                        getListPairs(playlist);
+                        getPlaylists(playlist);
                     }
                 }
                 updateList(playlist);
@@ -327,9 +333,13 @@ function GlobalStoreContextProvider(props) {
     }
 
     // THIS FUNCTION CREATES A NEW LIST
-    store.createNewList = async function () {
-        let newListName = "Untitled" + store.newListCounter;
-        const response = await api.createPlaylist(newListName, [], auth.user.email, auth.user.userName);
+    store.createNewList = async function (songs,listName) {
+        let newListName = "";
+        if(listName)
+            newListName = listName;
+        else
+            newListName = "Untitled" + store.newListCounter;
+        const response = await api.createPlaylist(newListName, songs, auth.user.email, auth.user.userName);
         console.log("createNewList response: " + response);
         if (response.status === 201) {
             tps.clearAllTransactions();
@@ -360,7 +370,7 @@ function GlobalStoreContextProvider(props) {
             const response = await api.getPlaylistPairs();
             if (response.data.success) {
                 let playlists = response.data.playlists;
-                console.log(playlists);
+                
                 storeReducer({
                     type: GlobalStoreActionType.LOAD_PLAYLISTS,
                     payload: {playlists:playlists}
@@ -372,7 +382,34 @@ function GlobalStoreContextProvider(props) {
         }
         asyncLoadPlaylists();
     }
+//This function deals with sorting playlists by name,creation,last edit,"publish date",listens, like, dislikes
+    store.sort = function(sortType) {
+        console.log(Date.now());
+        console.log("Sorting by "+sortType);
 
+        if(!store.playlists){
+            {};
+        }
+        else if(sortType==="name")
+            store.playlists.sort(function(a,b){return (a.name).localeCompare(b.name)});
+        else if(sortType==="creation")
+            store.playlists.sort(function(a,b){return (a.createdAt).localeCompare(b.createdAt)});
+        else if(sortType==="edit")
+            store.playlists.sort(function(a,b){return (b.updatedAt).localeCompare(a.updatedAt)});
+        else if(sortType==="publish")
+            store.playlists.sort(function(a,b){return (b.publishedDate.split(",")[1])-(a.publishedDate.split(",")[1])});
+        else if(sortType==="listens")
+            store.playlists.sort(function(a,b){return b.listens-a.listens});
+        else if(sortType==="likes")
+            store.playlists.sort(function(a,b){return b.likes.length-a.likes.length});
+        else if(sortType==="dislikes")
+            store.playlists.sort(function(a,b){return b.dislikes.length-a.dislikes.length});
+        storeReducer({
+            type: GlobalStoreActionType.UPDATE_PLAYLISTS,
+            payload: {playlists:store.playlists}
+        });  
+         
+    }
     // THE FOLLOWING 5 FUNCTIONS ARE FOR COORDINATING THE DELETION
     // OF A LIST, WHICH INCLUDES USING A VERIFICATION MODAL. THE
     // FUNCTIONS ARE markListForDeletion, deleteList, deleteMarkedList,
@@ -409,28 +446,79 @@ function GlobalStoreContextProvider(props) {
         store.loadPlaylists();
         store.hideModals();
     }
-    store.publishPlaylist = function(){
+    store.publishPlaylist = async function(){
         var now = new Date();
         console.log(store.currentList.publishedDate);
-        let publishedDate = now.getFullYear()+'-'+now.getMonth()+'-'+now.getDate()+ ","
-                            +now.getHours()+ ":" + now.getMinutes() + ":" + now.getSeconds();
+        let publishedDate = now.getFullYear()+'-'+now.getMonth()+'-'+now.getDate()+ ","+Date.now();
         store.currentList.publishedDate = publishedDate;
-        console.log(store.currentList.publishedDate);
-        store.updateCurrentList();
+        const response = await api.updatePlaylistById(store.currentList._id, store.currentList);
+        if (response.status === 200) {
+            var foundPlaylist = store.playlists.find(function(element){
+                return element._id === store.currentList._id;
+            })
+            foundPlaylist.publishedDate = publishedDate;
+            storeReducer({
+                type: GlobalStoreActionType.UPDATE_PLAYLISTS,
+                payload: {playlists:store.playlists}
+            });     
+        }
+        else {
+            console.log("API FAILED TO CREATE A NEW LIST");
+        }
+       
     }
+   
+    store.thumbsPlaylist = async function(id, like) {
+        var foundPlaylist = store.playlists.find(function(element){
+            return element._id === id;
+        })
+        var foundLiker = foundPlaylist.likes.find(function(element){
+            return element === auth.user.userName;
+        }) 
+        //Remove like
+        if(foundLiker)
+            foundPlaylist.likes.splice(foundPlaylist.likes.filter(function(item){
+                return item !==foundLiker
+            }),1)
+        //Add like
+        else if(like)
+            foundPlaylist.likes.push(auth.user.userName)
+        var foundDisliker = foundPlaylist.dislikes.find(function(element){
+            return element === auth.user.userName;
+        })
+        //Remove dislike
+        if(foundDisliker)
+            foundPlaylist.dislikes.splice(foundPlaylist.dislikes.filter(function(item){
+                return item !==foundDisliker
+            }),1)
+        //Add dislike
+        else if(!like)
+            foundPlaylist.dislikes.push(auth.user.userName)
+        const response = await api.updatePlaylistById(id, foundPlaylist);
+        if (response.status === 200) {
+            storeReducer({
+                type: GlobalStoreActionType.UPDATE_PLAYLISTS,
+                payload: {playlists:store.playlists}
+            });   
+        }
+        else {
+            console.log("API FAILED TO CREATE A NEW LIST");
+        }
+    }
+
     // THIS FUNCTION SHOWS THE MODAL FOR PROMPTING THE USER
     // TO SEE IF THEY REALLY WANT TO DELETE THE LIST
 
     store.showEditSongModal = (songIndex, songToEdit) => {
         storeReducer({
-            type: GlobalStoreActionType.EDIT_SONG,
-            payload: {currentSongIndex: songIndex, currentSong: songToEdit}
+            type: GlobalStoreActionType.OPEN_MODAL,
+            payload: {currentSongIndex: songIndex, currentSong: songToEdit, modal:CurrentModal.EDIT_SONG}
         });        
     }
     store.showRemoveSongModal = (songIndex, songToRemove) => {
         storeReducer({
-            type: GlobalStoreActionType.REMOVE_SONG,
-            payload: {currentSongIndex: songIndex, currentSong: songToRemove}
+            type: GlobalStoreActionType.OPEN_MODAL,
+            payload: {currentSongIndex: songIndex, currentSong: songToRemove, modal:CurrentModal.REMOVE_SONG}
         });        
     }
     store.hideModals = () => {
@@ -622,6 +710,11 @@ function GlobalStoreContextProvider(props) {
         console.log(store.homeSubscreen)
         return store.homeSubscreen === HomeSubscreen.HOME;
     }
+    store.isCurrentPublished = function(){
+        if(store.currentList)
+            return store.currentList.publishedDate !== "1970-00-01,0";
+        return true;
+    }
     store.isListOpen = function(id){
         console.log('open');
         if(!store.currentList)
@@ -637,7 +730,9 @@ function GlobalStoreContextProvider(props) {
             payload: null
         });
     }
-
+    store.getUserName = function() {
+        return auth.user.userName;
+    }
     return (
         <GlobalStoreContext.Provider value={{
             store
