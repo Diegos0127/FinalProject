@@ -1,6 +1,5 @@
 import { useContext, useState } from 'react'
 import { GlobalStoreContext } from '../store'
-import AuthContext from '../auth'
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
@@ -22,20 +21,19 @@ import EditToolbar from './EditToolbar';
 */
 function ListCard(props) {
     const { store } = useContext(GlobalStoreContext);
-    const { auth } = useContext(AuthContext);
     const [editActive, setEditActive] = useState(false);
     const [openContentActive, setOpenContentActive] = useState(false);
     const [text, setText] = useState("");
     const { playlist, selected } = props;
 
     let monthsArray = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug','Sept','Oct','Nov','Dec'];
-
+    let isPublished = (playlist.publishedDate !=="1970-00-01,0");
     function handleClick (event, id) {
         if (event.detail === 1 ) {
             console.log("clicked list card");
             store.setCurrentPlayingList(id);
         }
-        else if (event.detail === 2 && !store.currentList) {
+        else if (event.detail === 2 && !store.currentList && !isPublished) {
             handleToggleEdit(event);
         }
     }
@@ -80,7 +78,6 @@ function ListCard(props) {
         event.stopPropagation();
         store.thumbsPlaylist(playlist._id,false);
     }
-    let isPublished = (playlist.publishedDate !=="1970-00-01,0");
     let likeButton = "";
     let dislikeButton = "";
     let dates = playlist.publishedDate.split("-");

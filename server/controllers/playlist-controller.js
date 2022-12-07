@@ -110,8 +110,8 @@ getPlaylistById = async (req, res) => {
         asyncFindUser(list);
     }).catch(err => console.log(err))
 }
-getPlaylistPairs = async (req, res) => {
-    console.log("getPlaylistPairs");
+getUserPlaylists = async (req, res) => {
+    console.log("getUserPlaylists");
     await User.findOne({ _id: req.userId }, (err, user) => {
         console.log("find user with id " + req.userId);
         async function asyncFindList(email) {
@@ -138,7 +138,7 @@ getPlaylistPairs = async (req, res) => {
         asyncFindList(user.email);
     }).catch(err => console.log(err))
 }
-getPlaylists = async (req, res) => {
+getPublishedPlaylists = async (req, res) => {
     await Playlist.find({}, (err, playlists) => {
         if (err) {
             return res.status(400).json({ success: false, error: err })
@@ -148,7 +148,8 @@ getPlaylists = async (req, res) => {
                 .status(404)
                 .json({ success: false, error: `Playlists not found` })
         }
-        return res.status(200).json({ success: true, data: playlists })
+        let publishedPlaylists = playlists.filter((playlist)=> playlist.publishedDate!=="1970-00-01,0");
+        return res.status(200).json({ success: true, playlists: publishedPlaylists })
     }).catch(err => console.log(err))
 }
 updatePlaylist = async (req, res) => {
@@ -217,7 +218,7 @@ module.exports = {
     createPlaylist,
     deletePlaylist,
     getPlaylistById,
-    getPlaylistPairs,
-    getPlaylists,
+    getUserPlaylists,
+    getPublishedPlaylists,
     updatePlaylist
 }

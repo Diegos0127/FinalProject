@@ -18,13 +18,15 @@ export const AuthActionType = {
     LOGIN_USER: "LOGIN_USER",
     LOGOUT_USER: "LOGOUT_USER",
     REGISTER_USER: "REGISTER_USER",
-    CHANGE_MODAL: "CHANGE_MODAL"
+    CHANGE_MODAL: "CHANGE_MODAL",
+    LOGIN_GUEST: "LOGIN_GUEST"
 }
 
 function AuthContextProvider(props) {
     const [auth, setAuth] = useState({
         user: null,
         loggedIn: false,
+        guest: false,
         CURRENT_MODAL: CurrentModal.NONE,
         error: null
     });
@@ -63,6 +65,15 @@ function AuthContextProvider(props) {
                     CURRENT_MODAL : CurrentModal.NONE,
                     user: payload.user,
                     loggedIn: true
+                })
+            }
+            case AuthActionType.LOGIN_GUEST: {
+                return setAuth({
+                    user: null,
+                    loggedIn: false,
+                    CURRENT_MODAL: null,
+                    error: null,
+                    guest: true
                 })
             }
             case AuthActionType.CHANGE_MODAL: {

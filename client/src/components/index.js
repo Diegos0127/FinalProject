@@ -10,7 +10,6 @@ import MUIRemoveSongModal from './MUIRemoveSongModal'
 import RegisterScreen from './RegisterScreen'
 import SongCard from './SongCard'
 import SplashScreen from './SplashScreen'
-import Statusbar from './Statusbar'
 import WorkspaceSubscreen from './WorkspaceSubscreen'
 /*
     This serves as a module so that we can import
@@ -31,5 +30,4 @@ export {
     SongCard,
     RegisterScreen,
     SplashScreen,
-    Statusbar, 
     WorkspaceSubscreen }

@@ -26,7 +26,7 @@ const HomeScreen = () => {
     const isMenuOpen = Boolean(anchorEl);
 
     useEffect(() => {
-        store.loadPlaylists();
+        store.loadUserPlaylists();
     }, []);
 
     function handleCreateNewList() {
@@ -36,7 +36,13 @@ const HomeScreen = () => {
         console.log("Search");
     }
     function home(){
-        store.goHome();
+        store.loadUserPlaylists();
+    }
+    function handleAll(){
+        store.loadAllPlaylists();
+    }
+    function handleByUser(){
+        store.byUser();
     }
     const handleMenuClose = () => {
         setAnchorEl(null);
@@ -70,13 +76,13 @@ const HomeScreen = () => {
             open={isMenuOpen}
             onClose={handleMenuClose}
         >
-            <MenuItem onClick={(event)=>handleSort("creation")}>{"Creation Date (Old-New)"}</MenuItem>
-            <MenuItem onClick={(event)=>handleSort("edit")}>{"Last Edit Date (New-Old)"}</MenuItem>
             <MenuItem onClick={(event)=>handleSort("name")}>{"Name (A-Z)"}</MenuItem>
-            <MenuItem onClick={(event)=>handleSort("publish")}>{"Publish Date (Newest)"}</MenuItem>
-            <MenuItem onClick={(event)=>handleSort("listens")}>{"Listens (High-Low)"}</MenuItem>
-            <MenuItem onClick={(event)=>handleSort("likes")}>{"Likes (High-Low)"}</MenuItem>
-            <MenuItem onClick={(event)=>handleSort("dislikes")}>{"Dislikes (High-Low)"}</MenuItem>
+            {store.isHome()?<MenuItem onClick={(event)=>handleSort("creation")}>{"Creation Date (Old-New)"}</MenuItem>:""}
+            {store.isHome()?<MenuItem onClick={(event)=>handleSort("edit")}>{"Last Edit Date (New-Old)"}</MenuItem>:""}
+            {!store.isHome()?<MenuItem onClick={(event)=>handleSort("publish")}>{"Publish Date (Newest)"}</MenuItem>:""}
+            {!store.isHome()?<MenuItem onClick={(event)=>handleSort("listens")}>{"Listens (High-Low)"}</MenuItem>:""}
+            {!store.isHome()?<MenuItem onClick={(event)=>handleSort("likes")}>{"Likes (High-Low)"}</MenuItem>:""}
+            {!store.isHome()?<MenuItem onClick={(event)=>handleSort("dislikes")}>{"Dislikes (High-Low)"}</MenuItem>:""}
         </Menu>
     );
     const loggedInMenu = 
@@ -116,8 +122,8 @@ const HomeScreen = () => {
                 <Grid item xs = {12} sm = {6} md = {4} lg = {3} xl = {2} sx={{pb: 1}}>
                     <Box  >
                         <Button startIcon={<HomeOutlinedIcon id = "selector-icon" onClick={home}/>}></Button >
-                        <Button startIcon={<GroupsOutlinedIcon id = "selector-icon" />}></Button>
-                        <Button startIcon={<PersonOutlineOutlinedIcon id = "selector-icon"/>}> </Button>
+                        <Button startIcon={<GroupsOutlinedIcon id = "selector-icon" onClick={handleAll} />}></Button>
+                        <Button startIcon={<PersonOutlineOutlinedIcon id = "selector-icon" onClick={handleByUser}/>}> </Button>
                     </Box>
                 </Grid> 
                 <Grid item xs ={12} md = {6} >

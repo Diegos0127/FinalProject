@@ -9,6 +9,7 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
@@ -18,16 +19,20 @@ export default function AppBanner() {
     const { auth } = useContext(AuthContext);
     const { store } = useContext(GlobalStoreContext);
     const [anchorEl, setAnchorEl] = useState(null);
+    const [notSplash, setNotSplash] = useState(false)
     const isMenuOpen = Boolean(anchorEl);
     const iconColor = purple['A200']
     const handleSortMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
     };
-
+    if(notSplash!==(window.location.pathname !== "/"))
+        setNotSplash(window.location.pathname !== "/");
     const handleMenuClose = () => {
         setAnchorEl(null);
     };
-
+    const changeScreen = () => {
+        setNotSplash(true);
+    };
     const handleLogout = () => {
         handleMenuClose();
         auth.logoutUser();
@@ -78,7 +83,7 @@ export default function AppBanner() {
                 <Toolbar>
                     <img style={{width: "auto", height: "100%"}}src={process.env.PUBLIC_URL+'PlaylisterLogo.png'}  />
                     <Box sx={{ flexGrow: 1 }}></Box>
-                    <Box sx={{ display: {  md: 'flex' } }}>
+                    {auth.loggedIn||notSplash?<Box sx={{ display: {  md: 'flex' } }}>
                         <IconButton
                             
                             edge="end"
@@ -90,9 +95,20 @@ export default function AppBanner() {
                             sx = {{backgroundColor: iconColor, border:2, borderColor:'black'}}
 
                         >
-                            { auth.loggedIn ? <div>{auth.getUserInitials()}</div>:<AccountCircle />}
+                            {auth.loggedIn ? <div>{auth.getUserInitials()}</div>:<AccountCircle />}
                         </IconButton>
-                    </Box> 
+                    </Box>:<Grid container >
+                    <Grid item xs = {0} md = {6} lg ={7} onClick={changeScreen}></Grid>
+                <Grid item md = {3} lg={2} onClick={changeScreen}>
+                    <Link id = "splash-button" to='/' >Continue As Guest</Link>
+                </Grid>
+                <Grid item xs ={4} md = {2} onClick={changeScreen}>
+                    <Link id = "splash-button" to='/register/'>Create Account</Link>
+                </Grid>
+                <Grid item xs = {3} md = {1} onClick={changeScreen}>
+                    <Link id = "splash-button" to='/login/'>Login</Link>
+                </Grid>
+            </Grid>}
                     
                 </Toolbar>
             </AppBar>

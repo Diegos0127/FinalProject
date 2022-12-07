@@ -46,8 +46,17 @@ const CurrentModal = {
 }
 const HomeSubscreen = {
     HOME : "HOME",
-    ALL_SONGS: "ALL_SONGS",
-    USER_SONGS: "USER_SONGS"
+    ALL_PLAYLISTS: "ALL_PLAYLISTS",
+    BY_USER_PLAYLISTS: "BY_USER_PLAYLISTS"
+}
+const sortBy = {
+    EDIT : "edit",
+    CREATION : "creation",
+    NAME : "name",
+    PUBLISH : "publish",
+    LISTENS : "listens",
+    LIKES: "likes",
+    DISLIKES: "dislikes"
 }
 
 // WITH THIS WE'RE MAKING OUR GLOBAL DATA STORE
@@ -148,7 +157,7 @@ function GlobalStoreContextProvider(props) {
                 return setStore({
                     currentModal : CurrentModal.NONE,
                     currentList: null,
-                    homeSubscreen: store.homeSubscreen,
+                    homeSubscreen: payload.homeSubscreen,
                     playlists: payload.playlists,
                     currentPlayingList: null,
                     currentSongIndex: -1,
@@ -278,12 +287,48 @@ function GlobalStoreContextProvider(props) {
     // DRIVE THE STATE OF THE APPLICATION. WE'LL CALL THESE IN 
     // RESPONSE TO EVENTS INSIDE OUR COMPONENTS.
 
-    //FOR GOING TO THE HOME SUBSCREEN
-    store.goHome = function(){
+    // THIS LOADS ALL THE PLAYLISTS OF THE CURRENTLY LOGGED IN USER AND GOES HOME
+    store.loadUserPlaylists = function () {
+        tps.clearAllTransactions();
+        async function asyncLoadUserPlaylists() {
+            const response = await api.getUserPlaylists();
+            if (response.data.success) {
+                let playlists = response.data.playlists;
+                storeReducer({
+                    type: GlobalStoreActionType.LOAD_PLAYLISTS,
+                    payload: {playlists:playlists, homeSubscreen:HomeSubscreen.HOME}
+                });
+            }
+            else {
+                console.log("API FAILED TO GET THE LIST PAIRS");
+            }
+        }
+        asyncLoadUserPlaylists();
+    }
+    // THIS FUNCTION LOADS ALL OF THE PUBLISH PLAYLISTS AND GOES TO THE ALL PLAYLISTS SUBCREEN
+    store.loadAllPlaylists = function () {
+        tps.clearAllTransactions();
+        async function asyncLoadAllPlaylists() {
+            const response = await api.getPublishedPlaylists();
+            if (response.data.success) {
+                let playlists = response.data.playlists;
+                storeReducer({
+                    type: GlobalStoreActionType.LOAD_PLAYLISTS,
+                    payload: {playlists:playlists, homeSubscreen:HomeSubscreen.ALL_PLAYLISTS}
+                });
+            }
+            else {
+                console.log("API FAILED TO GET THE LIST PAIRS");
+            }
+        }
+        asyncLoadAllPlaylists();
+    }
+    //GOES THE SUBSCREEN WHERE PLAYLISTS ARE SEARCHE BY USER, STARTS OUT NULL BEFORE SEARCHING
+    store.byUser = function(){
         storeReducer({
-            type: GlobalStoreActionType.GO_HOME,
+            type: GlobalStoreActionType.LOAD_PLAYLISTS,
             payload: {
-                
+                playlists:null, homeSubscreen: HomeSubscreen.BY_USER_PLAYLISTS
             }
         });
     }
@@ -295,14 +340,13 @@ function GlobalStoreContextProvider(props) {
             if (response.data.success) {
                 let playlist = response.data.playlist;
                 let sameName = newName===playlist.name;
-                console.log(sameName);
                 playlist.name = newName;
                 async function updateList(playlist) {
                     if(!sameName)
                         response = await api.updatePlaylistById(playlist._id, playlist);
                     if (response.data.success||sameName) {
                         async function getPlaylists(playlist) {
-                            response = await api.getPlaylistPairs();
+                            response = await api.getUserPlaylists();
                             if (response.data.success) {
                                 let playlists = response.data.playlists;
                                 storeReducer({
@@ -344,10 +388,6 @@ function GlobalStoreContextProvider(props) {
         if (response.status === 201) {
             tps.clearAllTransactions();
             let newList = response.data.playlist;
-            let pair = {
-                _id: newList._id,
-                name: newList.name
-            };
             store.playlists.push(newList);
             storeReducer({
                 type: GlobalStoreActionType.CREATE_NEW_LIST,
@@ -363,30 +403,19 @@ function GlobalStoreContextProvider(props) {
         }
     }
 
-    // THIS FUNCTION LOADS ALL THE ID, NAME PAIRS SO WE CAN LIST ALL THE LISTS
-    store.loadPlaylists = function () {
-        tps.clearAllTransactions();
-        async function asyncLoadPlaylists() {
-            const response = await api.getPlaylistPairs();
-            if (response.data.success) {
-                let playlists = response.data.playlists;
-                
-                storeReducer({
-                    type: GlobalStoreActionType.LOAD_PLAYLISTS,
-                    payload: {playlists:playlists}
-                });
-            }
-            else {
-                console.log("API FAILED TO GET THE LIST PAIRS");
-            }
-        }
-        asyncLoadPlaylists();
-    }
-//This function deals with sorting playlists by name,creation,last edit,"publish date",listens, like, dislikes
+    
+    //This function deals with sorting playlists by name,creation,last edit,"publish date",listens, like, dislikes
     store.sort = function(sortType) {
-        console.log(Date.now());
         console.log("Sorting by "+sortType);
-
+        store.sortBy(sortType);
+        storeReducer({
+            type: GlobalStoreActionType.UPDATE_PLAYLISTS,
+            payload: {playlists:store.playlists}
+        });  
+         
+    }
+    //This function deals with sorting playlists by name,creation,last edit,"publish date",listens, like, dislikes
+    store.sortBy = function(sortType){
         if(!store.playlists){
             {};
         }
@@ -404,12 +433,8 @@ function GlobalStoreContextProvider(props) {
             store.playlists.sort(function(a,b){return b.likes.length-a.likes.length});
         else if(sortType==="dislikes")
             store.playlists.sort(function(a,b){return b.dislikes.length-a.dislikes.length});
-        storeReducer({
-            type: GlobalStoreActionType.UPDATE_PLAYLISTS,
-            payload: {playlists:store.playlists}
-        });  
-         
     }
+
     // THE FOLLOWING 5 FUNCTIONS ARE FOR COORDINATING THE DELETION
     // OF A LIST, WHICH INCLUDES USING A VERIFICATION MODAL. THE
     // FUNCTIONS ARE markListForDeletion, deleteList, deleteMarkedList,
@@ -433,7 +458,7 @@ function GlobalStoreContextProvider(props) {
             let response = await api.deletePlaylistById(id);
             console.log(response.data)
             if (response.data.success) {
-                store.loadPlaylists();
+                store.loadUserPlaylists();
             }
         }
         processDelete(id);
@@ -443,12 +468,11 @@ function GlobalStoreContextProvider(props) {
         store.hideModals();
     }
     store.unmarkListForDeletion = function() {
-        store.loadPlaylists();
+        store.loadUserPlaylists();
         store.hideModals();
     }
     store.publishPlaylist = async function(){
         var now = new Date();
-        console.log(store.currentList.publishedDate);
         let publishedDate = now.getFullYear()+'-'+now.getMonth()+'-'+now.getDate()+ ","+Date.now();
         store.currentList.publishedDate = publishedDate;
         const response = await api.updatePlaylistById(store.currentList._id, store.currentList);

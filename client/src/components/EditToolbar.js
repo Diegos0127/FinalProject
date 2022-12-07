@@ -60,7 +60,7 @@ function EditToolbar() {
                 variant="contained">
                 Publish
             </Button>:" "}
-            {!isPublished||owner?<Button
+            {store.isHome()?<Button
                 onClick={handleDeleteList}
                 id='add-song-button'
                 variant="contained">
