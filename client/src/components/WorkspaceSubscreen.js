@@ -19,7 +19,8 @@ function WorkspaceSubscreen() {
     const { store } = useContext(GlobalStoreContext);
     store.history = useHistory();
     
-    function handleAddNewSong() {
+    function handleAddNewSong(event) {
+        event.stopPropagation();
         store.addNewSong();
     }
     let modalJSX = "";
@@ -50,12 +51,15 @@ function WorkspaceSubscreen() {
             sx={{ width: '100%' }}
         >
             {songs}
-            <Box sx={{ display: 'flex', p: 1, backgroundColor:'info.dark', borderRadius:'12px'}} justifyContent="center" >
-                <Button sx={{color:'white',fontSize:'60px', maxHeight:'5vh', backgroundColor:'info.dark'}}
+                <Button sx={{width:"100%",p: 1,color:'white',fontSize:'60px', maxHeight:'6vh', backgroundColor:'info.dark', borderRadius:'12px',
+                '&:hover':{
+                    backgroundColor:'info.dark'
+                }}} 
+                justifyContent="center"
                 onClick={handleAddNewSong}>
                 + 
             </Button>
-            </Box>
+            
          </List>            
          { modalJSX }
          </Box>
@@ -63,3 +67,4 @@ function WorkspaceSubscreen() {
 }
 
 export default WorkspaceSubscreen;
+//<Box sx={{ display: 'flex', p: 1, backgroundColor:'info.dark', borderRadius:'12px'}} justifyContent="center" >

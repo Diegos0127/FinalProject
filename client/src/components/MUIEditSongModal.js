@@ -50,6 +50,7 @@ export default function MUIEditSongModal() {
     return (
         <Modal
             open={store.isEditSongModalOpen()}
+            onClick = {(event)=> event.stopPropagation()}
         >
             <Box sx={style}>
             <div

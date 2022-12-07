@@ -13,7 +13,7 @@ createPlaylist = (req, res) => {
     body.dislikes = [];
     body.listens = 0;
     body.comments = [];
-    body.publishedDate = '1970'+'-'+'0'+'-'+'1'+'-'+'0'+'-'+'0'+'-'+'0';
+    body.publishedDate = "1970-0-1,0:0:0";
     console.log("createPlaylist body: " + JSON.stringify(body));
     if (!body) {
         return res.status(400).json({
@@ -130,16 +130,8 @@ getPlaylistPairs = async (req, res) => {
                 else {
                     console.log("Send the Playlist pairs");
                     // PUT ALL THE LISTS INTO ID, NAME PAIRS
-                    let pairs = [];
-                    for (let key in playlists) {
-                        let list = playlists[key];
-                        let pair = {
-                            _id: list._id,
-                            name: list.name
-                        };
-                        pairs.push(pair);
-                    }
-                    return res.status(200).json({ success: true, idNamePairs: pairs })
+                    
+                    return res.status(200).json({ success: true, playlists: playlists })
                 }
             }).catch(err => console.log(err))
         }
@@ -191,6 +183,7 @@ updatePlaylist = async (req, res) => {
 
                     list.name = body.playlist.name;
                     list.songs = body.playlist.songs;
+                    list.publishedDate = body.playlist.publishedDate;
                     list
                         .save()
                         .then(() => {

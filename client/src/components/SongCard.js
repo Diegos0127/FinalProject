@@ -37,6 +37,7 @@ function SongCard(props) {
         store.addMoveSongTransaction(sourceIndex, targetIndex);
     }
     function handleRemoveSong(event) {
+        event.stopPropagation();
         store.showRemoveSongModal(index, song);
     }
     function handleClick(event) {
@@ -67,9 +68,7 @@ function SongCard(props) {
                 {index + 1}. {song.title} by {song.artist}
             </Box>
             <Box sx={{height:"50%"}}>
-                <IconButton onClick={(event) => {
-                        handleRemoveSong()
-                    }} aria-label='delete'>
+                <IconButton onClick={handleRemoveSong} aria-label='delete'>
                     <CloseIcon style={{fontSize:'36pt', color: 'white'}} />
                 </IconButton>
             </Box>

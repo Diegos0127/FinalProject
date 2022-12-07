@@ -26,7 +26,7 @@ function ListCard(props) {
     const [editActive, setEditActive] = useState(false);
     const [openContentActive, setOpenContentActive] = useState(false);
     const [text, setText] = useState("");
-    const { idNamePair, selected } = props;
+    const { playlist, selected } = props;
 
     function handleClick (event, id) {
         if (event.detail === 1 ) {
@@ -62,50 +62,62 @@ function ListCard(props) {
         event.stopPropagation();
         store.closeCurrentList();
         if(!openContentActive)
-            store.setCurrentList(idNamePair._id);
+            store.setCurrentList(playlist._id);
         setOpenContentActive(!openContentActive);
     }
-    if(store.currentList&&store.currentList._id!==idNamePair._id){
+    if(store.currentList&&store.currentList._id!==playlist._id){
         if(openContentActive){
             setOpenContentActive(false);
         }
     }
-    let bgcolor = 'info.light';
-    if(store.currentPlayingList&&store.currentPlayingList._id===idNamePair._id)
+    let isPublished = false;
+    if(playlist.publishedDate !=="1970-0-1,0:0:0")
+        isPublished = true;
+    let likeButton = "";
+    let dislikeButton = "";
+
+    if(isPublished){
+        likeButton = <Grid item xs ={12} xl = {3}>
+        <Button startIcon={<ThumbUpOffAltOutlinedIcon id = "list-card-button"/>}></Button >
+        {playlist.likes.length}
+    </Grid>;
+       dislikeButton = <Grid item xs ={12} xl = {2} >
+       <Button startIcon={<ThumbDownOffAltOutlinedIcon id = "list-card-button"/>}></Button >
+       {playlist.dislikes.length}
+   </Grid>;
+    }
+
+    let bgcolor = 'primary.light';
+    if(isPublished)
+        bgcolor = 'info.light'
+    if(store.currentPlayingList&&store.currentPlayingList._id===playlist._id)
         bgcolor = '#D3B04A';
 
     let cardElement =
         <Box
-            id={idNamePair._id}
-            key={idNamePair._id}
+            id={playlist._id}
+            key={playlist._id}
             className={"list-card unselected-list-card"}
             sx={{ marginTop: '0.1%', display: 'flex', p: 1,fontWeight:'bold', backgroundColor: bgcolor}}
-            onClick={(event) => { handleClick(event, idNamePair._id)}}
+            onClick={(event) => { handleClick(event, playlist._id)}}
         >
             <Grid container >
                 <Grid item xs ={12} xl = {7} sx={{ p: 1}}>
-                    <Box >{idNamePair.name}</Box>
+                    <Box >{playlist.name}</Box>
                     <Typography sx={{fontWeight:'bold'}}>By: {auth.user.userName}</Typography>
                 </Grid>
-                <Grid item xs ={12} xl = {3}>
-                    <Button startIcon={<ThumbUpOffAltOutlinedIcon id = "list-card-button"/>}></Button >
-                    1233455
-                </Grid>
-                <Grid item xs ={12} xl = {2} >
-                    <Button startIcon={<ThumbDownOffAltOutlinedIcon id = "list-card-button"/>}></Button >
-                    1233455
-                </Grid>
+                {likeButton} {dislikeButton}
                 {openContentActive? <Grid item xs ={12} xl = {12}>
                     <WorkspaceSubscreen></WorkspaceSubscreen>
                 </Grid>:""}
                 {openContentActive? <Grid item xs ={12} xl = {12}>
-                    <EditToolbar idNamePair={idNamePair}></EditToolbar>
+                    <EditToolbar isPublished={isPublished}></EditToolbar>
                 </Grid>:""}
                 <Grid item xs ={12} xl = {7} sx={{ p: 1, mt:4 }} >
-                    <Typography sx={{fontWeight:'bold'}}>Published: {idNamePair.name}</Typography>
+                    {isPublished?<Typography sx={{fontWeight:'bold'}}>Published: {playlist.publishedDate}</Typography>:""}
                 </Grid>
                 <Grid item xs ={12} xl = {4} sx={{ p: 1, mt:4 }}>
-                    <Typography sx={{fontWeight:'bold'}}>Listens: 1,2224,567</Typography>
+                    {isPublished?<Typography sx={{fontWeight:'bold'}}>Listens: {playlist.listens}</Typography>:""}
                 </Grid>
                 <Grid item xs ={12} xl = {1} sx={{ p: 1}}>
                     {openContentActive?<Button onClick={toggleOpenContent} startIcon={<KeyboardDoubleArrowUpOutlinedIcon id = "list-card-button"/>}></Button >
@@ -120,14 +132,14 @@ function ListCard(props) {
                 margin="normal"
                 required
                 fullWidth
-                id={"list-" + idNamePair._id}
+                id={"list-" + playlist._id}
                 label="Playlist Name"
                 name="name"
                 autoComplete="Playlist Name"
                 className='list-card'
                 onKeyPress={handleKeyPress}
                 onChange={handleUpdateText}
-                defaultValue={idNamePair.name}
+                defaultValue={playlist.name}
                 inputProps={{style: {fontSize: 48}}}
                 InputLabelProps={{style: {fontSize: 24}}}
                 autoFocus
