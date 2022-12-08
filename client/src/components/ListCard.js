@@ -22,14 +22,13 @@ import EditToolbar from './EditToolbar';
 function ListCard(props) {
     const { store } = useContext(GlobalStoreContext);
     const [editActive, setEditActive] = useState(false);
-    const [openContentActive, setOpenContentActive] = useState(false);
     const [text, setText] = useState("");
     const { playlist, selected } = props;
 
     let monthsArray = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug','Sept','Oct','Nov','Dec'];
     let isPublished = (playlist.publishedDate !=="1970-00-01,0");
     function handleClick (event, id) {
-        if (event.detail === 1 ) {
+        if (event.detail === 1 && playlist.songs.length > 0) {
             console.log("clicked list card");
             store.setCurrentPlayingList(id);
         }
@@ -60,16 +59,12 @@ function ListCard(props) {
     }
     function toggleOpenContent(event){
         event.stopPropagation();
-        store.closeCurrentList();
-        if(!openContentActive)
+        if(store.isListOpen(playlist._id))
+            store.closeCurrentList()
+        else
             store.setCurrentList(playlist._id);
-        setOpenContentActive(!openContentActive);
     }
-    if(store.currentList&&store.currentList._id!==playlist._id){
-        if(openContentActive){
-            setOpenContentActive(false);
-        }
-    }
+   
     function handleLike(event){
         event.stopPropagation();
         store.thumbsPlaylist(playlist._id,true);
@@ -114,10 +109,10 @@ function ListCard(props) {
                     <Typography sx={{fontWeight:'bold'}}>By: {playlist.ownerUserName}</Typography>
                 </Grid>
                 {likeButton} {dislikeButton}
-                {openContentActive? <Grid item xs ={12} xl = {12}>
+                {store.isListOpen(playlist._id)? <Grid item xs ={12} xl = {12}>
                     <WorkspaceSubscreen></WorkspaceSubscreen>
                 </Grid>:""}
-                {openContentActive? <Grid item xs ={12} xl = {12}>
+                {store.isListOpen(playlist._id)? <Grid item xs ={12} xl = {12}>
                     <EditToolbar></EditToolbar>
                 </Grid>:""}
                 <Grid item xs ={12} xl = {7} sx={{ p: 1, mt:4 }} >
@@ -127,7 +122,7 @@ function ListCard(props) {
                     {isPublished?<Typography sx={{fontWeight:'bold'}}>Listens: {playlist.listens}</Typography>:""}
                 </Grid>
                 <Grid item xs ={12} xl = {1} sx={{ p: 1}}>
-                    {openContentActive?<Button onClick={toggleOpenContent} startIcon={<KeyboardDoubleArrowUpOutlinedIcon id = "list-card-button"/>}></Button >
+                    {store.isListOpen(playlist._id)?<Button onClick={toggleOpenContent} startIcon={<KeyboardDoubleArrowUpOutlinedIcon id = "list-card-button"/>}></Button >
                     :<Button onClick={toggleOpenContent} startIcon={<KeyboardDoubleArrowDownOutlinedIcon id = "list-card-button"/> }></Button >}
                 </Grid>
             </Grid>

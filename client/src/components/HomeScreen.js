@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { GlobalStoreContext } from '../store'
 import AuthContext from '../auth';
 import ListCard from './ListCard.js'
+import YouTubePlayer from './YouTubePlayer';
 
 import Button from '@mui/material/Button';
 import List from '@mui/material/List';
@@ -140,7 +141,7 @@ const HomeScreen = () => {
                 </Grid>
                 <Grid item xs ={0} md={0} xl = {2}></Grid>
                 <Grid item xs ={6} xl = {2}>
-                        <Grid container justifyContent="flex-end" sx={{ bgcolor: 'primary'}}>
+                        <Grid container justifycontent="flex-end" sx={{ bgcolor: 'primary'}}>
                             <Grid item md = {6} >
                                 <Typography max height sx={{fontWeight:'bold', fontSize:'22px', height:'10px', textAlign:'center', mt:3 }}>SORT BY</Typography>
                             </Grid>
@@ -161,7 +162,7 @@ const HomeScreen = () => {
                         </List>
                 </Grid>
                 <Grid item xs ={12} md = {5} >
-                    <Box sx={{height:'65vh'}}>edfbhtbrtd</Box>
+                    {store.currentPlayingList?<YouTubePlayer playingList={store.currentPlayingList}></YouTubePlayer>:''}
                 </Grid>
                 <Grid item xs ={12} md = {12} sx={{textAlign:'center'}}>
                     {store.isHome()?

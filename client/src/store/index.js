@@ -175,7 +175,7 @@ function GlobalStoreContextProvider(props) {
                     homeSubscreen: store.homeSubscreen,
                     playlists: store.playlists,
                     currentPlayingList: store.currentPlayingList,
-                    currentList: null,
+                    currentList: store.currentList,
                     currentSongIndex: -1,
                     currentSong: null,
                     newListCounter: store.newListCounter,
@@ -221,7 +221,7 @@ function GlobalStoreContextProvider(props) {
                 return setStore({
                     currentModal : CurrentModal.NONE,
                     currentList: payload,
-                    currentPlayingList: payload,
+                    currentPlayingList: store.currentPlayingList,
                     homeSubscreen: store.homeSubscreen,
                     playlists: store.playlists,
                     currentSongIndex: -1,
@@ -237,7 +237,7 @@ function GlobalStoreContextProvider(props) {
                 return setStore({
                     currentModal : payload.modal,
                     currentList: store.currentList,
-                    currentPlayingList: payload,
+                    currentPlayingList: store.currentPlayingList,
                     currentSongIndex: payload.currentSongIndex,
                     homeSubscreen: store.homeSubscreen,
                     playlists: store.playlists,
@@ -263,21 +263,7 @@ function GlobalStoreContextProvider(props) {
                     listMarkedForDeletion: null
                 });
             }
-            case GlobalStoreActionType.GO_HOME: {
-                return setStore({
-                    currentModal : CurrentModal.NONE,
-                    homeSubscreen: HomeSubscreen.HOME,
-                    currentPlayingList: null,
-                    playlists: store.playlists,
-                    currentList: null,
-                    currentSongIndex: -1,
-                    currentSong: null,
-                    newListCounter: store.newListCounter,
-                    listNameActive: false,
-                    listIdMarkedForDeletion: null,
-                    listMarkedForDeletion: null
-                });
-            }
+           
             default:
                 return store;
         }
@@ -328,7 +314,7 @@ function GlobalStoreContextProvider(props) {
         tps.clearAllTransactions();
         if(userCriterion){
             async function asyncLoadByUserPlaylists() {
-                const response = await api.getPublishedPlaylists("user",userCriterion);
+                const response = await api.getPublishedPlaylists("user", userCriterion);
                 if (response.data.success) {
                     let playlists = response.data.playlists;
                     storeReducer({
@@ -495,7 +481,6 @@ function GlobalStoreContextProvider(props) {
     store.deleteList = function (id) {
         async function processDelete(id) {
             let response = await api.deletePlaylistById(id);
-            console.log(response.data)
             if (response.data.success) {
                 store.loadUserPlaylists();
             }
@@ -628,7 +613,6 @@ function GlobalStoreContextProvider(props) {
             let response = await api.getPlaylistById(id);
             if (response.data.success) {
                 let playlist = response.data.playlist;
-
                 response = await api.updatePlaylistById(playlist._id, playlist);
                 if (response.data.success) {
                     storeReducer({
@@ -779,11 +763,8 @@ function GlobalStoreContextProvider(props) {
         return true;
     }
     store.isListOpen = function(id){
-        console.log('open');
         if(!store.currentList)
-            return true;
-        console.log(store.currentList);
-        console.log(id);
+            return  false;
         return store.currentList._id === id;
     }
     // THIS FUNCTION ENABLES THE PROCESS OF EDITING A LIST NAME
