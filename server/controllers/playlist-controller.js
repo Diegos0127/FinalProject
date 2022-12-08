@@ -186,7 +186,7 @@ updatePlaylist = async (req, res) => {
             await User.findOne({ email: list.ownerEmail }, (err, user) => {
                 console.log("user._id: " + user._id);
                 console.log("req.userId: " + req.userId);
-                if (user._id == req.userId) {
+                if (user._id == req.userId || (list.publishedDate !== "1970-00-01,0")) {
                     console.log("correct user!");
                     console.log("req.body.name: " + req.body.name);
 

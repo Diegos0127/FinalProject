@@ -412,11 +412,14 @@ function GlobalStoreContextProvider(props) {
         console.log("createNewList response: " + response);
         if (response.status === 201) {
             tps.clearAllTransactions();
-            let newList = response.data.playlist;
-            store.playlists.push(newList);
+            let currentPlaylist = store.currentList;
+            if(store.homeSubscreen===HomeSubscreen.HOME){
+                currentPlaylist = response.data.playlist;
+                store.playlists.push(currentPlaylist);
+            }
             storeReducer({
                 type: GlobalStoreActionType.CREATE_NEW_LIST,
-                payload: newList
+                payload: currentPlaylist
             }
             );
 
@@ -613,7 +616,10 @@ function GlobalStoreContextProvider(props) {
             let response = await api.getPlaylistById(id);
             if (response.data.success) {
                 let playlist = response.data.playlist;
+                playlist.listens = playlist.listens + 1;
+                console.log(playlist.listens);
                 response = await api.updatePlaylistById(playlist._id, playlist);
+                
                 if (response.data.success) {
                     storeReducer({
                         type: GlobalStoreActionType.SET_CURRENT_PLAYING_LIST,
@@ -776,6 +782,9 @@ function GlobalStoreContextProvider(props) {
     }
     store.getUserName = function() {
         return auth.user.userName;
+    }
+    store.getCurrentPlayingList = function(){
+        return store.currentPlayingList;
     }
     return (
         <GlobalStoreContext.Provider value={{

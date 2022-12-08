@@ -4,7 +4,7 @@ import YouTube from "react-youtube";
 
 const YouTubePlayer = (props) => {
   const { store } = useContext(GlobalStoreContext);
-  const {playingList} = props;
+  let playingList = store.getCurrentPlayingList();
   const [videoIndex, setVideoIndex] = useState(0);
   const playerRef = useRef(null);
 
@@ -19,7 +19,14 @@ const YouTubePlayer = (props) => {
   function onPlayerReady(event) {
     playerRef.current = event.target;
   }
-  
+  function previousSong(){
+    if(videoIndex>0)
+        setVideoIndex(videoIndex-1)
+  }
+  function nextSong(){
+    if(videoIndex+1<playingList.songs.length)
+        setVideoIndex(videoIndex+1);
+  }
   // THIS IS OUR EVENT HANDLER FOR WHEN THE YOUTUBE PLAYER'S STATE
   // CHANGES. NOTE THAT playerStatus WILL HAVE A DIFFERENT INTEGER
   // VALUE TO REPRESENT THE TYPE OF STATE CHANGE. A playerStatus
@@ -32,12 +39,12 @@ const YouTubePlayer = (props) => {
     else if (playerStatus === 0) {
       // THE VIDEO HAS COMPLETED PLAYING
       console.log("0 Video ended");
-    if(videoIndex+1<playingList.songs.length)
+    if(videoIndex+1<playingList.songs.length){
         setVideoIndex(videoIndex+1);
+        playerRef.current.playVideo();
+    }
       console.log(playingList.songs.length);
       console.log(videoIndex);
-      if((videoIndex+1)<playingList.length)
-        console.log(playingList.length);
     }
     else if (playerStatus === 1) {
       // THE VIDEO IS PLAYED
@@ -63,6 +70,13 @@ const YouTubePlayer = (props) => {
         onStateChange={onPlayerStateChange}
       />:""}
       <div>
+      <button
+          onClick={() =>  {
+              previousSong();
+          }}
+        >
+          Previous
+        </button>
         <button
           onClick={() => {
             if (playerRef.current.getPlayerState() !== 1) {
@@ -82,6 +96,13 @@ const YouTubePlayer = (props) => {
           }}
         >
           Pause
+        </button>
+        <button
+          onClick={() => {
+              nextSong();
+          } }
+        >
+          next
         </button>
       </div>
     </div>
