@@ -1,5 +1,6 @@
 import { useContext } from 'react'
 import { GlobalStoreContext } from '../store'
+import AuthContext from '../auth'
 import Button from '@mui/material/Button';
 
 /*
@@ -10,10 +11,10 @@ import Button from '@mui/material/Button';
 */
 function EditToolbar() {
     const { store } = useContext(GlobalStoreContext);
-
+    const { auth } = useContext(AuthContext);
     let isPublished = store.isCurrentPublished();
     let owner = false;
-    if(store.currentList)
+    if(store.currentList&&auth.loggedIn)
         owner = store.currentList.ownerUserName === store.getUserName();
     async function handleDeleteList(event) {
         event.stopPropagation();
@@ -66,13 +67,13 @@ function EditToolbar() {
                 variant="contained">
                 Delete
             </Button>:" "}
-            <Button 
+            {auth.loggedIn?<Button 
                 disabled={!store.canClose()}
                 id='close-button'
                 onClick={handleDuplicateList}
                 variant="contained">
                     Duplicate
-            </Button>
+            </Button>:""}
         </div>
     )
 }

@@ -594,11 +594,14 @@ function GlobalStoreContextProvider(props) {
     // moveItem, updateItem, updateCurrentList, undo, and redo
     store.setCurrentList = function (id) {
         async function asyncSetCurrentList(id) {
-            let response = await api.getPlaylistById(id);
+            let response = "e";
+            if(auth.guest)
+                response = await api.getPublishedPlaylistById(id);
+            else
+                response = await api.getPlaylistById(id);
             if (response.data.success) {
+                console.log(response);
                 let playlist = response.data.playlist;
-
-                response = await api.updatePlaylistById(playlist._id, playlist);
                 if (response.data.success) {
                     storeReducer({
                         type: GlobalStoreActionType.SET_CURRENT_LIST,
@@ -613,13 +616,18 @@ function GlobalStoreContextProvider(props) {
     //CHANGES WHICH PLAYLIST IS CURRENTLY PLAYING
     store.setCurrentPlayingList = function (id) {
         async function asyncSetCurrentPlayingList(id) {
-            let response = await api.getPlaylistById(id);
+            let response = "e";
+            if(auth.guest)
+                response = await api.getPublishedPlaylistById(id);
+            else
+                response = await api.getPlaylistById(id);
             if (response.data.success) {
                 let playlist = response.data.playlist;
-                playlist.listens = playlist.listens + 1;
-                console.log(playlist.listens);
-                response = await api.updatePlaylistById(playlist._id, playlist);
-                
+                if(!auth.guest){
+                    playlist.listens = playlist.listens + 1;
+                    console.log(playlist.listens);
+                    response = await api.updatePlaylistById(playlist._id, playlist);
+                }
                 if (response.data.success) {
                     storeReducer({
                         type: GlobalStoreActionType.SET_CURRENT_PLAYING_LIST,
@@ -781,7 +789,7 @@ function GlobalStoreContextProvider(props) {
         });
     }
     store.getUserName = function() {
-        return auth.user.userName;
+        return auth.user.userName;   
     }
     store.getCurrentPlayingList = function(){
         return store.currentPlayingList;

@@ -110,6 +110,28 @@ getPlaylistById = async (req, res) => {
         asyncFindUser(list);
     }).catch(err => console.log(err))
 }
+
+getPublishedPlaylistById = async (req, res) => {
+    console.log("Find Playlist with id: " + JSON.stringify(req.params.id));
+
+    await Playlist.findById({ _id: req.params.id }, (err, list) => {
+        if (err) {
+            return res.status(400).json({ success: false, error: err });
+        }
+        console.log("Found list: " + JSON.stringify(list));
+        // DOES THIS LIST BELONG TO THIS USER?
+        
+                if ((list.publishedDate !== "1970-00-01,0")) {
+                    console.log("correct user!");
+                    return res.status(200).json({ success: true, playlist: list })
+                }
+                else {
+                    console.log(list.publishedDate);
+                    console.log("incorrect user!");
+                    return res.status(400).json({ success: false, description: "authentication error" });
+                }
+})}
+
 getUserPlaylists = async (req, res) => {
     const body = req.body;
     console.log("getUserPlaylists"+ JSON.stringify(body));
@@ -187,6 +209,7 @@ updatePlaylist = async (req, res) => {
                 console.log("user._id: " + user._id);
                 console.log("req.userId: " + req.userId);
                 if (user._id == req.userId || (list.publishedDate !== "1970-00-01,0")) {
+                    
                     console.log("correct user!");
                     console.log("req.body.name: " + req.body.name);
 
@@ -226,6 +249,7 @@ module.exports = {
     createPlaylist,
     deletePlaylist,
     getPlaylistById,
+    getPublishedPlaylistById,
     getUserPlaylists,
     getPublishedPlaylists,
     updatePlaylist
