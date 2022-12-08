@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid'
 
 import Typography from '@mui/material/Typography';
@@ -15,7 +14,7 @@ const SplashScreen = () => {
                 Welcome To:
             </Typography>
             <img style ={{flexGrow: 1}} src={process.env.PUBLIC_URL+'PlaylisterLogo.png'} alt=""/>
-            <Typography variant ="h5" mx = {"14%"} sx ={{fontWeight:'bold'}}>
+            <Typography variant ="h4" mx = {"14%"} sx ={{fontWeight:'bold'}}>
                 An app where you can store all of your favorite songs into different playlists
                  for different moods and situations. Don't know what to play? Browse a catalogue of playlists
                 made by other users and make them your own by duplicating and modifying them. If you want to share 

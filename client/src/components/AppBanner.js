@@ -21,17 +21,24 @@ export default function AppBanner() {
     const [anchorEl, setAnchorEl] = useState(null);
     const [notSplash, setNotSplash] = useState(false)
     const isMenuOpen = Boolean(anchorEl);
-    const iconColor = purple['A200']
+    let iconColor = purple['A200']
+    if(!auth.loggedIn)
+        iconColor = 'clear';
     const handleSortMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
     };
     if(notSplash!==(window.location.pathname !== "/"))
         setNotSplash(window.location.pathname !== "/");
+    
     const handleMenuClose = () => {
         setAnchorEl(null);
     };
     const changeScreen = () => {
         setNotSplash(true);
+    };
+    const handleGuest = () => {
+        setNotSplash(true);
+        auth.loginGuest();
     };
     const handleLogout = () => {
         handleMenuClose();
@@ -83,7 +90,7 @@ export default function AppBanner() {
                 <Toolbar>
                     <img style={{width: "auto", height: "100%"}}src={process.env.PUBLIC_URL+'PlaylisterLogo.png'}  />
                     <Box sx={{ flexGrow: 1 }}></Box>
-                    {auth.loggedIn||notSplash?<Box sx={{ display: {  md: 'flex' } }}>
+                    {auth.loggedIn||notSplash||auth.guest?<Box sx={{ display: {  md: 'flex' } }}>
                         <IconButton
                             
                             edge="end"
@@ -93,13 +100,12 @@ export default function AppBanner() {
                             onClick={handleSortMenuOpen}
                             color="inherit"
                             sx = {{backgroundColor: iconColor, border:2, borderColor:'black'}}
-
                         >
-                            {auth.loggedIn ? <div>{auth.getUserInitials()}</div>:<AccountCircle />}
+                            {auth.loggedIn ? <div>{auth.getUserInitials()}</div>:<AccountCircle sx={{fontSize:'25px'}}/>}
                         </IconButton>
                     </Box>:<Grid container >
-                    <Grid item xs = {0} md = {6} lg ={7} onClick={changeScreen}></Grid>
-                <Grid item md = {3} lg={2} onClick={changeScreen}>
+                    <Grid item xs = {0} md = {6} lg ={7} ></Grid>
+                <Grid item md = {3} lg={2} onClick={handleGuest}>
                     <Link id = "splash-button" to='/' >Continue As Guest</Link>
                 </Grid>
                 <Grid item xs ={4} md = {2} onClick={changeScreen}>

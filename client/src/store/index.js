@@ -288,10 +288,10 @@ function GlobalStoreContextProvider(props) {
     // RESPONSE TO EVENTS INSIDE OUR COMPONENTS.
 
     // THIS LOADS ALL THE PLAYLISTS OF THE CURRENTLY LOGGED IN USER AND GOES HOME
-    store.loadUserPlaylists = function () {
+    store.loadUserPlaylists = function (nameCriterion) {
         tps.clearAllTransactions();
         async function asyncLoadUserPlaylists() {
-            const response = await api.getUserPlaylists();
+            const response = await api.getUserPlaylists(nameCriterion);
             if (response.data.success) {
                 let playlists = response.data.playlists;
                 storeReducer({
@@ -306,10 +306,10 @@ function GlobalStoreContextProvider(props) {
         asyncLoadUserPlaylists();
     }
     // THIS FUNCTION LOADS ALL OF THE PUBLISH PLAYLISTS AND GOES TO THE ALL PLAYLISTS SUBCREEN
-    store.loadAllPlaylists = function () {
+    store.loadAllPlaylists = function (nameCriterion) {
         tps.clearAllTransactions();
         async function asyncLoadAllPlaylists() {
-            const response = await api.getPublishedPlaylists();
+            const response = await api.getPublishedPlaylists("name",nameCriterion);
             if (response.data.success) {
                 let playlists = response.data.playlists;
                 storeReducer({
@@ -324,13 +324,52 @@ function GlobalStoreContextProvider(props) {
         asyncLoadAllPlaylists();
     }
     //GOES THE SUBSCREEN WHERE PLAYLISTS ARE SEARCHE BY USER, STARTS OUT NULL BEFORE SEARCHING
-    store.byUser = function(){
+    store.byUser = function(userCriterion){
+        tps.clearAllTransactions();
+        if(userCriterion){
+            async function asyncLoadByUserPlaylists() {
+                const response = await api.getPublishedPlaylists("user",userCriterion);
+                if (response.data.success) {
+                    let playlists = response.data.playlists;
+                    storeReducer({
+                        type: GlobalStoreActionType.LOAD_PLAYLISTS,
+                        payload: {playlists:playlists, homeSubscreen:HomeSubscreen.BY_USER_PLAYLISTS}
+                    });
+                }
+                else {
+                    console.log("API FAILED TO GET THE LIST PAIRS");
+                }
+            }
+            asyncLoadByUserPlaylists();
+        }
         storeReducer({
             type: GlobalStoreActionType.LOAD_PLAYLISTS,
             payload: {
                 playlists:null, homeSubscreen: HomeSubscreen.BY_USER_PLAYLISTS
             }
         });
+    }
+    //THIS FUNCTION PROCESSES SEARCH BAR REQUESTS
+    store.search = function(search){
+        let trimmedSearch = "";
+        if(search)
+            trimmedSearch = search.trim();
+        if(trimmedSearch){
+            if(store.homeSubscreen===HomeSubscreen.HOME)
+                store.loadUserPlaylists(trimmedSearch);
+            else if(store.homeSubscreen===HomeSubscreen.ALL_PLAYLISTS)
+                store.loadAllPlaylists(trimmedSearch);
+            else
+                store.byUser(trimmedSearch);
+        }
+        else{
+            storeReducer({
+                type: GlobalStoreActionType.LOAD_PLAYLISTS,
+                payload: {
+                    playlists:null, homeSubscreen: store.homeSubscreen
+                }
+            });
+        }
     }
     // THIS FUNCTION PROCESSES CHANGING A LIST NAME
     store.changeListName = function (id, newName) {

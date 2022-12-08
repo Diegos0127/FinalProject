@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { GlobalStoreContext } from '../store'
+import AuthContext from '../auth';
 import ListCard from './ListCard.js'
 
 import Button from '@mui/material/Button';
@@ -22,18 +23,24 @@ import Typography from '@mui/material/Typography'
 */
 const HomeScreen = () => {
     const { store } = useContext(GlobalStoreContext);
+    const { auth } = useContext(AuthContext);
     const [anchorEl, setAnchorEl] = useState(null);
     const isMenuOpen = Boolean(anchorEl);
 
     useEffect(() => {
-        store.loadUserPlaylists();
+        if(auth.guest)
+            store.loadAllPlaylists();
+        else
+            store.loadUserPlaylists();
     }, []);
 
     function handleCreateNewList() {
         store.createNewList([]);
     }
-    function handleSearch(){
-        console.log("Search");
+    function handleSearch(event){
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        store.search(formData.get('search'));
     }
     function home(){
         store.loadUserPlaylists();
@@ -120,15 +127,15 @@ const HomeScreen = () => {
     return (
         <Grid container sx={{ bgcolor: 'primary.dark' }}>
                 <Grid item xs = {12} sm = {6} md = {4} lg = {3} xl = {2} sx={{pb: 1}}>
-                    <Box  >
-                        <Button startIcon={<HomeOutlinedIcon id = "selector-icon" onClick={home}/>}></Button >
+                    <Box>
+                        {auth.loggedIn?<Button startIcon={<HomeOutlinedIcon id = "selector-icon"/>} onClick={home}></Button >:""}
                         <Button startIcon={<GroupsOutlinedIcon id = "selector-icon" onClick={handleAll} />}></Button>
                         <Button startIcon={<PersonOutlineOutlinedIcon id = "selector-icon" onClick={handleByUser}/>}> </Button>
                     </Box>
                 </Grid> 
                 <Grid item xs ={12} md = {6} >
                     <Box component="form" noValidate onSubmit={handleSearch} sx={{ mt: 1, bgcolor:'common.white' }}>
-                        <TextField fullWidth label="Search" variant = 'filled' />
+                        <TextField fullWidth label="Search" name="search" variant = 'filled' />
                     </Box>
                 </Grid>
                 <Grid item xs ={0} md={0} xl = {2}></Grid>
@@ -144,7 +151,6 @@ const HomeScreen = () => {
                                         aria-controls={menuId}
                                         aria-haspopup="true"
                                         onClick={handleSortMenuOpen}> 
-                                
                                 </Button>
                             </Grid>
                         </Grid>
@@ -152,7 +158,7 @@ const HomeScreen = () => {
                 <Grid item xs ={12} md = {7} >
                         <List sx={{ width: '100%',overflow: 'auto',maxHeight:'65vh'}}>
                         {list}
-                        </List>; 
+                        </List>
                 </Grid>
                 <Grid item xs ={12} md = {5} >
                     <Box sx={{height:'65vh'}}>edfbhtbrtd</Box>

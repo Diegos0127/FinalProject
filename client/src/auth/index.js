@@ -151,6 +151,15 @@ function AuthContextProvider(props) {
             })
         }
     }
+    auth.loginGuest = function() {
+        authReducer({
+            type: AuthActionType.LOGIN_GUEST,
+            payload: {
+                
+            }
+        })
+        history.push("/");
+    }
 
     auth.logoutUser = async function() {
         const response = await api.logoutUser();

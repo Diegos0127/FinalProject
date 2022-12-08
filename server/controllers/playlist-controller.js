@@ -111,7 +111,9 @@ getPlaylistById = async (req, res) => {
     }).catch(err => console.log(err))
 }
 getUserPlaylists = async (req, res) => {
-    console.log("getUserPlaylists");
+    const body = req.body;
+    console.log("getUserPlaylists"+ JSON.stringify(body));
+    
     await User.findOne({ _id: req.userId }, (err, user) => {
         console.log("find user with id " + req.userId);
         async function asyncFindList(email) {
@@ -128,9 +130,10 @@ getUserPlaylists = async (req, res) => {
                         .json({ success: false, error: 'Playlists not found' })
                 }
                 else {
-                    console.log("Send the Playlist pairs");
+                    console.log("Send the Playlists");
                     // PUT ALL THE LISTS INTO ID, NAME PAIRS
-                    
+                    if(body.nameCriterion)
+                        playlists = playlists.filter((playlist)=> playlist.name.includes(body.nameCriterion));
                     return res.status(200).json({ success: true, playlists: playlists })
                 }
             }).catch(err => console.log(err))
@@ -139,6 +142,7 @@ getUserPlaylists = async (req, res) => {
     }).catch(err => console.log(err))
 }
 getPublishedPlaylists = async (req, res) => {
+    const body = req.body;
     await Playlist.find({}, (err, playlists) => {
         if (err) {
             return res.status(400).json({ success: false, error: err })
@@ -148,6 +152,10 @@ getPublishedPlaylists = async (req, res) => {
                 .status(404)
                 .json({ success: false, error: `Playlists not found` })
         }
+        if(body.criterion&&body.type==="name")
+                        playlists = playlists.filter((playlist)=> playlist.name.includes(body.criterion));
+        if(body.criterion&&body.type==="user")
+            playlists = playlists.filter((playlist)=> playlist.ownerUserName.includes(body.criterion));
         let publishedPlaylists = playlists.filter((playlist)=> playlist.publishedDate!=="1970-00-01,0");
         return res.status(200).json({ success: true, playlists: publishedPlaylists })
     }).catch(err => console.log(err))
